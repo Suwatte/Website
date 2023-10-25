@@ -1,0 +1,42 @@
+---
+title: Home
+description: Suwatte, an Ad-Free, Feature Rich Comic Reader for iOS.
+template: splash
+hero:
+  title: An Ad-Free, Feature Rich Comic Reader App for iOS.
+  tagline: With support for CBR, CBZ, OPDS & External Sources. Suwatte acts as an all-purpose reader for all your comic needs.
+  image:
+    alt: Reader
+    html: <img src="/tabs.gif" width="300" />
+  actions:
+    - text: Join Testflight
+      link: https://testflight.apple.com/join/qDyYMTLJ
+      icon: external
+      variant: primary
+    - text: Read the docs
+      link: /guides/quick/welcome
+      icon: right-arrow
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Unlimited Customization" icon="setting">
+		Experience true freedom in reading with unparalleled customization options, shaped to your preference.
+	</Card>
+	<Card title="OPDS" icon="laptop">
+		Seamlessly integrate your OPDS feeds, opening the gateway to a vast comic universe at your fingertips.
+	</Card>
+  	<Card title="Archived Comics" icon="open-book">
+		Your archived comics find a new home! Effortlessly read CBR, CBZ, RAR, and ZIP files like never before.
+	</Card>
+  	<Card title="Cross Device Sync" icon="sun">
+		Jump from device to device without losing your progress, thanks to cross-device synchronization.
+	</Card>
+	<Card title="Tracking" icon="pen">
+		Sync your milestones & progress with integrated tracking, letting sites like Anilist and others celebrate your reading achievements.
+	</Card>
+	<Card title="External Sources" icon="document">
+		Expand your horizons by tapping into external sources using the Diasuke Engine.
+	</Card>
+</CardGrid>
