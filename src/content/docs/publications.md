@@ -37,7 +37,7 @@ controls and a zoom control, not text controls.
   <div class="guide-media__frame">
     <img src="/guides/reader/pdf-reader.jpg" alt="A PDF open in the publication reader" loading="lazy" />
   </div>
-  <figcaption>PDF Reader. <a href="https://www.peppercarrot.com">Pepper &amp; Carrot</a> by David Revoy and contributors, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Shown in Suwatte; screenshot cropped. No endorsement.</figcaption>
+  <figcaption>PDF Reader. <a href="https://www.peppercarrot.com" target="_blank" rel="noopener noreferrer">Pepper &amp; Carrot</a> by David Revoy and contributors, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Shown in Suwatte; screenshot cropped. No endorsement.</figcaption>
 </figure>
 
 ## Where they come from

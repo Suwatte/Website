@@ -47,8 +47,8 @@ this mode, because the art often continues across a page break.
     </div>
   </div>
   <figcaption>
-    Based on <a href="https://www.peppercarrot.com">Pepper &amp; Carrot</a> by David Revoy,
-    licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+    Based on <a href="https://www.peppercarrot.com" target="_blank" rel="noopener noreferrer">Pepper &amp; Carrot</a> by David Revoy,
+    licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>.
     Screenshots are cropped; David Revoy does not endorse Suwatte.
   </figcaption>
 </figure>

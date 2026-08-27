@@ -67,12 +67,12 @@ import { SITE, EXTERNAL_LINKS } from '../consts';
       <strong>Email:</strong> <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
     </li>
     <li>
-      <strong>GitHub:</strong> <a href={SITE.github}>{SITE.github}</a>
+      <strong>GitHub:</strong> <a href={SITE.github} target="_blank" rel="noopener noreferrer">{SITE.github}</a>
     </li>
     {
       EXTERNAL_LINKS.discord && (
         <li>
-          <strong>Discord:</strong> <a href={EXTERNAL_LINKS.discord}>Join the server</a>
+          <strong>Discord:</strong> <a href={EXTERNAL_LINKS.discord} target="_blank" rel="noopener noreferrer">Join the server</a>
         </li>
       )
     }

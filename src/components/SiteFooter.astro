@@ -34,6 +34,7 @@ const columns = [
 ];
 
 const year = new Date().getFullYear();
+const isExternal = (href: string) => href.startsWith('http://') || href.startsWith('https://');
 ---
 
 <footer class="footer">
@@ -55,7 +56,13 @@ const year = new Date().getFullYear();
           <ul>
             {column.links.map((link) => (
               <li>
-                <a href={link.href}>{link.label}</a>
+                <a
+                  href={link.href}
+                  target={isExternal(link.href) ? '_blank' : undefined}
+                  rel={isExternal(link.href) ? 'noopener noreferrer' : undefined}
+                >
+                  {link.label}
+                </a>
               </li>
             ))}
           </ul>
