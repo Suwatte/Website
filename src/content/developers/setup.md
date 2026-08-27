@@ -8,10 +8,10 @@ command line tool. You install one package.
 
 ## Install
 
-You need Node.js version 18 or a later version.
+You need Node.js version 22 or a later version.
 
 ```sh
-npm i @suwatte/toolchain
+npm install --save-dev @suwatte/toolchain
 ```
 
 The package adds a `suwatte` command to your project.
@@ -38,20 +38,24 @@ my-catalog/
 ├── package.json
 ├── tsconfig.json
 └── src/
-    ├── example-en/
-    │   └── index.ts
-    └── example-jp/
-        └── index.ts
+    └── sources/
+        ├── example-en/
+        │   └── index.ts
+        └── example-jp/
+            └── index.ts
 ```
 
 The build makes these files:
 
 ```
-stt/
+dist/
 ├── sources/
 │   ├── example-en.stt
 │   └── example-jp.stt
-└── sources.json
+├── sources.json
+├── index.html
+├── main.css
+└── catalog.js
 ```
 
 The `.stt` files are the bundles. The `sources.json` file is the source list that a person adds in

@@ -6,29 +6,32 @@ description: The catalogue that the toolchain emits, where the metadata of a sou
 A person does not install a source file. That person adds a **source list**, then installs a
 source from it.
 
-The `suwatte build` command makes the list for you. It reads the static `info` property of each
+The `npx suwatte build` command makes the list for you. It reads the static `info` property of each
 delegate class.
 
 ## What the build emits
 
 ```
-stt/
+dist/
 ├── sources/
 │   ├── en.example.stt
 │   └── ja.example.stt
-└── sources.json
+├── sources.json
+├── index.html
+├── main.css
+└── catalog.js
 ```
 
-The `.stt` files are the bundles. The `sources.json` file is the list.
-
-Add `--webpage` to also get `index.html`, `main.css` and `catalog.js`. Use the page when you host
-the list for other persons. It gives them a link to install each source.
+The `.stt` files are the bundles. The `sources.json` file is the list. The webpage gives a person
+a link to install each source when you host the output directory.
 
 ## The list format
 
 ```json
 {
-  "name": "Example Source List",
+  "catalogVersion": 2,
+  "generatedAt": "2026-08-27T12:00:00.000Z",
+  "listName": "Example Source List",
   "sources": [
     {
       "id": "en.example",
@@ -37,13 +40,20 @@ the list for other persons. It gives them a link to install each source.
       "website": "https://example.org",
       "thumbnail": "example.png",
       "minSupportedAppVersion": "7.0.0",
-      "supportedLanguages": ["en"],
-      "contentRating": 0,
-      "path": "en.example"
+      "languages": ["en"],
+      "rating": 0,
+      "path": "en.example",
+      "variantId": "en.example",
+      "sourceId": "example",
+      "environment": "jsc"
     }
   ]
 }
 ```
+
+The toolchain writes `catalogVersion`, `generatedAt` and `listName` for the complete list. Set the
+display name with `suwatte.listName` in your project's `package.json`; otherwise the package name
+is used.
 
 ## The fields
 
@@ -55,13 +65,13 @@ the list for other persons. It gives them a link to install each source.
 | `website` | Yes | The site that the source reads. |
 | `thumbnail` | No | A file name below the `assets` folder. |
 | `minSupportedAppVersion` | No | The app compares it as a number, so `10.0` is more than `9.9`. |
-| `supportedLanguages` | No | The app also accepts the name `languages`. |
-| `contentRating` | No | The app also accepts the name `rating`. |
-| `path` | No | Where the bundle is, next to the list. |
-| `environment` | No | `jsc` or `webkit`. |
-
-The app accepts `supportedLanguages` and `languages`, and `contentRating` and `rating`. An older
-list therefore continues to work.
+| `languages` | Yes | The languages that the source supports. |
+| `rating` | Yes | A numeric `ContentRating` value. |
+| `path` | Yes | The artifact name below the `sources` folder, without `.stt`. |
+| `variantId` | Yes | The stable identifier for this variant. |
+| `sourceId` | Yes | The source directory that produced the artifact. |
+| `environment` | Yes | `jsc` or `webkit`. |
+| `config` | No | Configuration metadata for the variant. |
 
 ## Where the assets go
 
@@ -91,7 +101,7 @@ choice.
 Serve the list and its bundles from the same origin, so that the `path` value and the `assets`
 folder resolve correctly.
 
-To test on your own network, use `suwatte serve`. See [The command line](/developers/cli/).
+To test on your own network, use `npx suwatte serve`. See [The command line](/developers/cli/).
 
 ## Updates
 

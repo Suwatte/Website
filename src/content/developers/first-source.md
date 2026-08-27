@@ -25,7 +25,7 @@ export default class Target {
 }
 ```
 
-Run `suwatte build`. The source compiles. The app can install it, but it does nothing.
+Run `npx suwatte build`. The source compiles. The app can install it, but it does nothing.
 
 ## 2. Add search
 
@@ -141,7 +141,7 @@ See [Home page feeds](/developers/homepage/) for the section styles.
 ## 6. Test it
 
 Run the source in [the emulator](/developers/emulator/) on your computer. Then run
-`suwatte serve` and install it on a device.
+`npx suwatte serve` and install it on a device.
 
 ## What to read next
 

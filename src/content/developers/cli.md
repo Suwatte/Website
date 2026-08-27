@@ -8,33 +8,32 @@ The `@suwatte/toolchain` package adds a `suwatte` command. It has two subcommand
 ## Build
 
 ```sh
-suwatte build
+npx suwatte build
 ```
 
 The build makes these files:
 
-- One `.stt` bundle for each source, in `stt/sources`.
-- One `stt/sources.json` source list.
+- One `.stt` bundle for each source, in `dist/sources`.
+- One `dist/sources.json` source list.
+- A source-list webpage in `dist/index.html`, with its stylesheet and script.
 
 ### Options
 
 | Option | What it does |
 | --- | --- |
-| `--webpage` | Also writes `stt/index.html`, `stt/main.css` and `stt/catalog.js`. |
 | `-f, --folder <folder>` | Changes the output folder. |
 | `--timings` | Prints the time that each build phase took. |
 
-Use `--webpage` when you host the list for other persons. The page gives them a link to install
-each source.
+The generated webpage gives a person a link to install each source when you host the output
+directory.
 
 ## Serve
 
 ```sh
-suwatte serve
+npx suwatte serve
 ```
 
-The `serve` subcommand builds the catalog and then hosts it on your local network. It always turns
-the webpage assets on before it hosts.
+The `serve` subcommand builds the catalog and then hosts it on your local network.
 
 ### Options
 
@@ -46,7 +45,7 @@ the webpage assets on before it hosts.
 
 ## Test on a device
 
-1. Run `suwatte serve` on your computer.
+1. Run `npx suwatte serve` on your computer.
 2. Note the address that the command prints.
 3. Open Suwatte on a device that is on the same network.
 4. Go to **Settings → Sources → Manage Sources**.
