@@ -19,3 +19,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# Legacy captures retained locally for reference; not approved for publication
+src/assets/screenshots/
+
+# jetbrains setting folder
+.idea/

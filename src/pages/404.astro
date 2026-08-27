@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="That page does not exist.">
+  <div class="notfound shell">
+    <p class="eyebrow">404</p>
+    <h1>This page is not here.</h1>
+    <p class="lede">
+      The link is old, or the page moved. Try one of these pages.
+    </p>
+    <ul class="notfound__links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/docs/introduction/">Guides</a></li>
+      <li><a href="/developers/introduction/">Developer guides</a></li>
+      <li><a href="/help/">Help</a></li>
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound {
+    max-width: 40rem;
+    padding-block: clamp(4rem, 12vh, 8rem) 6rem;
+  }
+
+  .notfound h1 {
+    margin-block: 0.6rem 1rem;
+    font-size: var(--step-4);
+    letter-spacing: -0.032em;
+  }
+
+  .notfound__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    font-family: var(--font-ui);
+    font-weight: 600;
+  }
+</style>

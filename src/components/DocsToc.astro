@@ -1,0 +1,111 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+// Only h2/h3 — deeper levels make the rail unreadable at this width.
+const headings = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+  headings.length > 1 && (
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 class="toc__heading" id="toc-heading">
+        On this page
+      </h2>
+      <ul>
+        {headings.map((heading) => (
+          <li class={`toc__item toc__item--h${heading.depth}`}>
+            <a href={`#${heading.slug}`} data-toc-link={heading.slug}>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    font-family: var(--font-ui);
+  }
+
+  .toc__heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.1rem;
+    border-inline-start: 1px solid var(--border);
+  }
+
+  .toc a {
+    display: block;
+    padding: 0.28rem 0.7rem;
+    margin-inline-start: -1px;
+    border-inline-start: 2px solid transparent;
+    color: var(--text-faint);
+    font-size: 0.86rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: color 0.14s ease, border-color 0.14s ease;
+  }
+
+  .toc__item--h3 a {
+    padding-inline-start: 1.4rem;
+  }
+
+  .toc a:hover {
+    color: var(--text);
+  }
+
+  .toc a[data-active] {
+    border-inline-start-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const links = new Map<string, HTMLAnchorElement>();
+  document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]').forEach((link) => {
+    links.set(link.dataset.tocLink!, link);
+  });
+
+  if (links.size > 0) {
+    const targets = [...links.keys()]
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    let active: HTMLAnchorElement | undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const link = links.get(entry.target.id);
+          if (!link) continue;
+          active?.removeAttribute('data-active');
+          link.setAttribute('data-active', '');
+          active = link;
+        }
+      },
+      // Weighted to the top of the viewport so the highlighted heading is the
+      // one you are actually reading under, not the one entering from below.
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 },
+    );
+
+    targets.forEach((target) => observer.observe(target));
+  }
+</script>

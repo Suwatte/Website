@@ -1,0 +1,187 @@
+---
+// Pagefind indexes the built site, so results exist after `npm run build`.
+// During `astro dev` the button explains that rather than failing silently.
+---
+
+<button class="search-trigger" type="button" data-search-open>
+  <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+    <circle cx="10.8" cy="10.8" r="6.3" />
+    <path d="M15.5 15.5 20 20" stroke-linecap="round" />
+  </svg>
+  <span>Search</span>
+  <kbd>/</kbd>
+</button>
+
+<dialog class="search" data-search-dialog aria-label="Search documentation">
+  <form class="search__field" role="search" onsubmit="return false">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="10.8" cy="10.8" r="6.3" />
+      <path d="M15.5 15.5 20 20" stroke-linecap="round" />
+    </svg>
+    <input
+      type="search"
+      placeholder="Search the documentation"
+      aria-label="Search the documentation"
+      autocomplete="off"
+      data-search-input
+    />
+    <button type="button" class="search__close" data-search-close>Esc</button>
+  </form>
+  <div class="search__results" data-search-results aria-live="polite"></div>
+</dialog>
+
+<style>
+  .search-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-raised);
+    color: var(--text-faint);
+    font-family: var(--font-ui);
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: border-color 0.16s ease, color 0.16s ease;
+  }
+
+  .search-trigger:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  .search-trigger svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+
+  .search-trigger span {
+    margin-inline-end: auto;
+  }
+
+  kbd {
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-sunken);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .search {
+    width: min(100% - 2rem, 38rem);
+    max-height: min(72vh, 34rem);
+    margin-block-start: 12vh;
+    padding: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-lg);
+    background: var(--bg-raised);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .search::backdrop {
+    background: rgba(8, 7, 19, 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  .search__field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 1rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .search__field svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+    color: var(--text-faint);
+  }
+
+  .search__field input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+  }
+
+  .search__field input:focus {
+    outline: none;
+  }
+
+  .search__close {
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: var(--bg-sunken);
+    color: var(--text-faint);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    cursor: pointer;
+  }
+
+  .search__results {
+    max-height: calc(min(72vh, 34rem) - 3.6rem);
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .search__results:empty {
+    display: none;
+  }
+
+  .search__results :global(.search__message) {
+    margin: 0;
+    padding: 1.2rem 1rem;
+    color: var(--text-faint);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .search__results :global(.search__hit) {
+    display: block;
+    padding: 0.7rem 0.8rem;
+    border-radius: var(--radius-sm);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .search__results :global(.search__hit:hover),
+  .search__results :global(.search__hit:focus-visible) {
+    background: var(--accent-wash);
+    color: inherit;
+  }
+
+  .search__results :global(.search__hit strong) {
+    display: block;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .search__results :global(.search__hit span) {
+    display: block;
+    margin-block-start: 0.15rem;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .search__results :global(.search__hit mark) {
+    background: var(--accent-wash);
+    color: var(--accent);
+    border-radius: 3px;
+  }
+</style>
+
+<script is:inline type="module" src="/scripts/docs-search.js"></script>

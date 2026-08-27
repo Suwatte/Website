@@ -1,0 +1,28 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { DEV_DOCS_SIDEBAR } from '../../consts';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('developers');
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<DocsLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  groups={DEV_DOCS_SIDEBAR}
+  base="/developers"
+  sectionLabel="Developers"
+  currentSlug={entry.id}
+  headings={headings}
+>
+  <Content />
+</DocsLayout>

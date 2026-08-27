@@ -1,0 +1,480 @@
+/* ------------------------------------------------------------------ *
+ * Suwatte — design system
+ *
+ * Two typefaces, two jobs. Prose is set in Literata, a face designed for
+ * long-form reading; interface chrome is set in Bricolage Grotesque. The
+ * site separates reading from operating the same way the app does.
+ * ------------------------------------------------------------------ */
+
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/literata';
+@import '@fontsource-variable/jetbrains-mono';
+
+:root {
+  --font-ui: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-prose: 'Literata Variable', ui-serif, Georgia, serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+
+  /* Dusk palette. #6A5ACD is the app's own accent colour. */
+  --iris: #6a5acd;
+  --iris-lift: #9b8cf0;
+  --iris-deep: #4c3fa0;
+  --amber: #e8a33d;
+
+  --step--1: clamp(0.83rem, 0.81rem + 0.1vw, 0.89rem);
+  --step-0: clamp(1rem, 0.96rem + 0.18vw, 1.09rem);
+  --step-1: clamp(1.2rem, 1.13rem + 0.33vw, 1.4rem);
+  --step-2: clamp(1.44rem, 1.33rem + 0.55vw, 1.8rem);
+  --step-3: clamp(1.73rem, 1.55rem + 0.87vw, 2.3rem);
+  --step-4: clamp(2.07rem, 1.79rem + 1.36vw, 2.96rem);
+  --step-5: clamp(2.49rem, 2.05rem + 2.1vw, 3.82rem);
+
+  --gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem);
+  --measure: 68ch;
+  --shell: 76rem;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+
+  --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+
+  color-scheme: light;
+  --bg: #f7f5fa;
+  --bg-raised: #ffffff;
+  --bg-sunken: #ece9f3;
+  --text: #14122a;
+  --text-muted: #4a4763;
+  --text-faint: #6f6b88;
+  --accent: #5443b0;
+  --accent-hover: #3f3193;
+  --accent-on: #ffffff;
+  --accent-wash: rgba(106, 90, 205, 0.09);
+  --border: rgba(20, 18, 42, 0.11);
+  --border-strong: rgba(20, 18, 42, 0.2);
+  --shadow-sm: 0 1px 2px rgba(20, 18, 42, 0.06), 0 2px 8px rgba(20, 18, 42, 0.04);
+  --shadow: 0 2px 4px rgba(20, 18, 42, 0.06), 0 12px 32px rgba(20, 18, 42, 0.08);
+  --panel-face: #ffffff;
+  --panel-edge: rgba(20, 18, 42, 0.14);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c0a1a;
+  --bg-raised: #16132b;
+  --bg-sunken: #080713;
+  --text: #eae7f6;
+  --text-muted: #a9a3c4;
+  --text-faint: #7d779b;
+  --accent: #9b8cf0;
+  --accent-hover: #b4a8ff;
+  --accent-on: #0c0a1a;
+  --accent-wash: rgba(155, 140, 240, 0.13);
+  --border: rgba(234, 231, 246, 0.12);
+  --border-strong: rgba(234, 231, 246, 0.22);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.45);
+  --panel-face: #1d1938;
+  --panel-edge: rgba(234, 231, 246, 0.16);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-prose);
+  font-size: var(--step-0);
+  line-height: 1.65;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+  margin: 0;
+}
+
+p,
+li {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-color: color-mix(in oklab, var(--accent) 35%, transparent);
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  color: var(--accent-hover);
+  text-decoration-color: currentColor;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--accent-wash);
+  color: var(--text);
+}
+
+/* ---------------------------- primitives ---------------------------- */
+
+.shell {
+  width: min(100% - var(--gutter) * 2, var(--shell));
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0;
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+
+.btn {
+  --btn-bg: var(--accent);
+  --btn-fg: var(--accent-on);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.78rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  font-family: var(--font-ui);
+  font-size: var(--step-0);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease-spring), background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.btn:hover {
+  --btn-bg: var(--accent-hover);
+  color: var(--btn-fg);
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--text);
+  border-color: var(--border-strong);
+}
+
+.btn--ghost:hover {
+  --btn-bg: var(--accent-wash);
+  --btn-fg: var(--text);
+  border-color: var(--accent);
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-on);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.16s ease;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+  color: var(--accent-on);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ------------------------------ prose ------------------------------ */
+
+.prose {
+  max-width: var(--measure);
+}
+
+.prose > * + * {
+  margin-block-start: 1.15em;
+}
+
+.prose h2 {
+  font-size: var(--step-3);
+  margin-block-start: 2.4em;
+}
+
+.prose h3 {
+  font-size: var(--step-2);
+  margin-block-start: 1.9em;
+}
+
+.prose h4 {
+  font-size: var(--step-1);
+  margin-block-start: 1.6em;
+}
+
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+  margin-block-start: 0.7em;
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: 1.4em;
+}
+
+.prose li + li {
+  margin-block-start: 0.4em;
+}
+
+.prose :not(pre) > code {
+  padding: 0.15em 0.4em;
+  border-radius: 5px;
+  background: var(--bg-sunken);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.prose pre {
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  font-size: var(--step--1);
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding: 0.2rem 0 0.2rem 1.25rem;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--text-muted);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+}
+
+.prose :is(th, td) {
+  text-align: start;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.prose th {
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg-sunken);
+}
+
+.prose td code {
+  white-space: nowrap;
+}
+
+/* Guide media stays narrow enough to read as an iPhone screen. */
+.prose .guide-media {
+  margin: 2rem 0;
+}
+
+.prose .guide-media__frame,
+.prose .guide-media__item {
+  min-width: 0;
+}
+
+.prose .guide-media__frame {
+  display: grid;
+  place-items: center;
+  padding: clamp(0.8rem, 2vw, 1.4rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-sunken);
+}
+
+.prose .guide-media__frame :is(img, video),
+.prose .guide-media__item img {
+  width: min(100%, 18rem);
+  margin-inline: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: clamp(1rem, 4vw, 2rem);
+  box-shadow: var(--shadow);
+  background: #000;
+}
+
+.prose .guide-media__grid,
+.prose .guide-media--pair {
+  display: grid;
+  gap: 1rem;
+}
+
+.prose .guide-media__grid--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.prose .guide-media__grid--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.prose .guide-media--pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.prose .guide-media__item {
+  display: grid;
+  gap: 0.65rem;
+  justify-items: center;
+}
+
+.prose .guide-media__item span,
+.prose .guide-media figcaption {
+  font-family: var(--font-ui);
+  font-size: var(--step--1);
+  line-height: 1.35;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.prose .guide-media figcaption {
+  grid-column: 1 / -1;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 42rem) {
+  .prose .guide-media__grid--four,
+  .prose .guide-media__grid--three {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 30rem) {
+  .prose .guide-media--pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tables and code are the two things that overflow on phones. */
+.prose .table-scroll {
+  overflow-x: auto;
+  margin-inline: calc(var(--gutter) * -0.5);
+  padding-inline: calc(var(--gutter) * 0.5);
+}
+
+.heading-anchor {
+  margin-inline-start: 0.4em;
+  color: var(--text-faint);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.14s ease;
+}
+
+:is(h2, h3, h4):hover > .heading-anchor,
+.heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* Shiki emits both themes; swap which one is painted. */
+:root[data-theme='dark'] .astro-code,
+:root[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

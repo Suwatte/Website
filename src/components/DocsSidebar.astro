@@ -1,0 +1,82 @@
+---
+import type { SidebarGroup } from '../consts';
+
+interface Props {
+  groups: SidebarGroup[];
+  /** Route prefix, e.g. "/docs". */
+  base: string;
+  currentSlug: string;
+}
+
+const { groups, base, currentSlug } = Astro.props;
+---
+
+<nav class="sidebar" aria-label="Documentation">
+  {
+    groups.map((group) => (
+      <section class="sidebar__group">
+        <h2 class="sidebar__heading">{group.label}</h2>
+        <ul>
+          {group.entries.map((entry) => (
+            <li>
+              <a
+                href={`${base}/${entry.slug}/`}
+                aria-current={entry.slug === currentSlug ? 'page' : undefined}
+              >
+                {entry.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</nav>
+
+<style>
+  .sidebar {
+    font-family: var(--font-ui);
+  }
+
+  .sidebar__group + .sidebar__group {
+    margin-block-start: 1.6rem;
+  }
+
+  .sidebar__heading {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .sidebar ul {
+    list-style: none;
+    margin: 0.55rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 0.34rem 0.6rem;
+    border-radius: 7px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: background-color 0.14s ease, color 0.14s ease;
+  }
+
+  .sidebar a:hover {
+    background: var(--accent-wash);
+    color: var(--text);
+  }
+
+  .sidebar a[aria-current='page'] {
+    background: var(--accent-wash);
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>

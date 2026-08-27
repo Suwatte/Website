@@ -1,0 +1,156 @@
+---
+import Logo from './Logo.astro';
+import { SITE, EXTERNAL_LINKS } from '../consts';
+
+const columns = [
+  {
+    heading: 'Guides',
+    links: [
+      { label: 'Start here', href: '/docs/introduction/' },
+      { label: 'Sources', href: '/docs/sources/' },
+      { label: 'Servers', href: '/docs/servers/' },
+      { label: 'iCloud sync', href: '/docs/sync/' },
+    ],
+  },
+  {
+    heading: 'Developers',
+    links: [
+      { label: 'How sources work', href: '/developers/introduction/' },
+      { label: 'Capabilities', href: '/developers/capabilities/' },
+      { label: 'Source lists', href: '/developers/source-lists/' },
+      { label: 'GitHub', href: SITE.github },
+    ],
+  },
+  {
+    heading: 'About',
+    links: [
+      { label: 'Help', href: '/help/' },
+      { label: 'Support on Patreon', href: SITE.patreon },
+      { label: 'Privacy policy', href: '/privacy/' },
+      { label: 'Terms of use', href: '/terms/' },
+      ...(EXTERNAL_LINKS.discord ? [{ label: 'Discord', href: EXTERNAL_LINKS.discord }] : []),
+    ],
+  },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="shell footer__inner">
+    <div class="footer__brand">
+      <a class="footer__logo" href="/">
+        <Logo size={22} />
+        <span>{SITE.name}</span>
+      </a>
+      <p class="footer__note">
+        A reader for manga, manhwa, manhua, comics and novels, on iPhone and iPad.
+      </p>
+    </div>
+
+    {
+      columns.map((column) => (
+        <nav class="footer__col" aria-label={column.heading}>
+          <h2 class="footer__heading">{column.heading}</h2>
+          <ul>
+            {column.links.map((link) => (
+              <li>
+                <a href={link.href}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+  </div>
+
+  <div class="shell footer__base">
+    <p>© {year} {SITE.name}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-block-start: 6rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg-sunken);
+    font-family: var(--font-ui);
+  }
+
+  .footer__inner {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 2.5rem 1.5rem;
+    padding-block: 3.5rem 2.5rem;
+  }
+
+  .footer__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+  }
+
+  .footer__note {
+    margin: 0.7rem 0 0;
+    max-width: 32ch;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--text-faint);
+  }
+
+  .footer__heading {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .footer__col ul {
+    list-style: none;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.55rem;
+  }
+
+  .footer__col a {
+    color: var(--text-muted);
+    font-size: 0.94rem;
+    text-decoration: none;
+  }
+
+  .footer__col a:hover {
+    color: var(--accent);
+  }
+
+  .footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding-block: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-faint);
+    font-size: 0.85rem;
+  }
+
+  .footer__base p {
+    margin: 0;
+  }
+
+  @media (max-width: 52rem) {
+    .footer__inner {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

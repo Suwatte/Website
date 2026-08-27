@@ -1,0 +1,148 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * A screenshot slot.
+ *
+ * Give it a `src` and it shows the image. Give it no `src` and it shows a
+ * labelled placeholder, so an empty slot is obvious on the page instead of
+ * being a blank box. To add a real screenshot, import it and pass it in. No
+ * other change is necessary.
+ */
+
+interface Props {
+  /** What this screenshot must show. Shown in the placeholder. */
+  label: string;
+  /** Optional caption under the frame. */
+  caption?: string;
+  shape?: 'phone' | 'tablet' | 'wide';
+  src?: ImageMetadata;
+  alt?: string;
+  class?: string;
+  /** The source already includes an official Apple product bezel. */
+  framed?: boolean;
+  loading?: 'eager' | 'lazy';
+}
+
+const {
+  label,
+  caption,
+  shape = 'phone',
+  src,
+  alt,
+  class: className,
+  framed = false,
+  loading = 'lazy',
+} = Astro.props;
+---
+
+<figure class:list={['shot', `shot--${shape}`, { 'shot--framed': framed }, className]}>
+  <div class="shot__frame">
+    {
+      src ? (
+        <Image class="shot__image" src={src} alt={alt ?? label} loading={loading} />
+      ) : (
+        <div class="shot__placeholder">
+          <span class="shot__tag">Screenshot</span>
+          <span class="shot__label">{label}</span>
+        </div>
+      )
+    }
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .shot {
+    margin: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .shot__frame {
+    position: relative;
+    border: 1px solid var(--panel-edge);
+    border-radius: var(--radius-lg);
+    background: var(--panel-face);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .shot--phone .shot__frame {
+    aspect-ratio: 9 / 19.5;
+  }
+
+  .shot--tablet .shot__frame {
+    aspect-ratio: 3 / 4;
+  }
+
+  .shot--wide .shot__frame {
+    aspect-ratio: 16 / 10;
+  }
+
+  .shot--framed .shot__frame {
+    aspect-ratio: 1350 / 2760;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .shot--framed .shot__image {
+    object-fit: contain;
+    filter: drop-shadow(0 1.1rem 1.4rem rgb(0 0 0 / 0.28));
+  }
+
+  .shot__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .shot__placeholder {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.6rem;
+    height: 100%;
+    padding: 1.2rem;
+    text-align: center;
+    /* Diagonal hatch, so an empty slot cannot be mistaken for a real image. */
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--accent-wash) 0 10px,
+      transparent 10px 20px
+    );
+  }
+
+  .shot__tag {
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-on);
+    font-family: var(--font-ui);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .shot__label {
+    max-width: 24ch;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  figcaption {
+    color: var(--text-faint);
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    line-height: 1.45;
+    text-align: center;
+  }
+</style>

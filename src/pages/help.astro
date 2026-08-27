@@ -1,0 +1,100 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE, EXTERNAL_LINKS } from '../consts';
+---
+
+<PageLayout
+  title="Help"
+  description="What to check first, and how to report a fault that we can correct."
+>
+  <h2>Check these first</h2>
+
+  <p>Most reports have one of these causes:</p>
+
+  <ul>
+    <li>
+      <strong>A source stopped working.</strong> A source breaks when the site that it reads
+      changes. Look for a source update first. See{" "}
+      <a href="/docs/troubleshooting/">Correct a fault</a>.
+    </li>
+    <li>
+      <strong>There is nothing to browse.</strong> Suwatte comes with no content. See{" "}
+      <a href="/docs/first-source/">Add your first source</a>.
+    </li>
+    <li>
+      <strong>A download does not progress.</strong> The usual cause is{" "}
+      <em>Only Download on Wi-Fi</em>, or background downloads that are off. See{" "}
+      <a href="/docs/downloads/">Downloads</a>.
+    </li>
+    <li>
+      <strong>Content is missing after a restore.</strong> A backup holds no downloads and no server
+      credentials. See <a href="/docs/backups/">Backups</a>.
+    </li>
+    <li>
+      <strong>Two devices do not agree.</strong> See <a href="/docs/sync/">iCloud sync</a>.
+    </li>
+  </ul>
+
+  <p>
+    The <a href="/docs/faq/">questions and answers</a> page holds the questions that come most
+    often.
+  </p>
+
+  <h2>Report a fault</h2>
+
+  <p>We can act on a report that holds:</p>
+
+  <ul>
+    <li>The app version, from <strong>Settings → About</strong>.</li>
+    <li>Your device and your iOS version.</li>
+    <li>What you did, what you expected, and what happened.</li>
+    <li>
+      The relevant part of <strong>Settings → Advanced → Logs</strong>. This part usually makes a
+      fault possible to find.
+    </li>
+    <li>Whether the fault happens each time, or only sometimes.</li>
+  </ul>
+
+  <p>
+    If the fault is in one source, give its name and its version. The author of a source corrects
+    its faults. Send that report to the person who maintains the source list that you used.
+  </p>
+
+  <h2>Where to write</h2>
+
+  <ul>
+    <li>
+      <strong>Email:</strong> <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>
+    </li>
+    <li>
+      <strong>GitHub:</strong> <a href={SITE.github}>{SITE.github}</a>
+    </li>
+    {
+      EXTERNAL_LINKS.discord && (
+        <li>
+          <strong>Discord:</strong> <a href={EXTERNAL_LINKS.discord}>Join the server</a>
+        </li>
+      )
+    }
+  </ul>
+
+  <h2>What we cannot do</h2>
+
+  <p>
+    We cannot help you to find content. We cannot suggest a source or a source list. We cannot
+    correct a source that stopped working.
+  </p>
+
+  <p>
+    Suwatte does not operate a directory of sources. Another party writes each source, and we do
+    not check it.
+  </p>
+
+  <h2>Write a source</h2>
+
+  <p>
+    If you maintain a source and have a question about the runtime, read the{" "}
+    <a href="/developers/introduction/">developer guides</a>. They cover the toolchain, the
+    capabilities, the network stack and the release process.
+  </p>
+</PageLayout>

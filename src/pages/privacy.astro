@@ -1,0 +1,285 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE, LEGAL } from '../consts';
+
+// Exempt from the site's ASD-STE100 rules. See scripts/ste-check.mjs.
+// Values come from LEGAL in src/consts.ts.
+---
+
+<PageLayout
+  title="Privacy policy"
+  description="Where Suwatte keeps your data, what leaves your device, and the controls available to you."
+  meta={`Version ${LEGAL.privacyVersion} · Effective ${LEGAL.privacyEffective}`}
+>
+  <div class="callout">
+    <p>
+      <strong>In short.</strong> Suwatte has no account, advertising, or developer-operated product
+      analytics. Your library is held on your device and in your private iCloud storage. Requests
+      go directly to the Sources, Servers, and metadata providers that you choose. We receive
+      information when you contact support or visit this website, and Apple can provide opt-in App
+      Store diagnostics.
+    </p>
+  </div>
+
+  <h2>1. Who we are</h2>
+
+  <p>
+    {LEGAL.entity} ("we", "us") is responsible for the limited personal data described in this
+    policy. We are based in {LEGAL.country}. Contact us at{' '}
+    <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>{LEGAL.address ? `, or by post at ${LEGAL.address}` : ''}.
+  </p>
+
+  <p>
+    This policy applies to the Suwatte app for iOS and iPadOS, this website, and support messages
+    sent to us. It does not govern Apple or a Source, Server, metadata provider, or website that you
+    choose to use.
+  </p>
+
+  <h2>2. What we receive</h2>
+
+  <p>
+    The app contains no developer-operated analytics or crash-reporting SDK. It does not send us
+    your library, reading history, search terms, device identifiers, location, Server addresses,
+    credentials, or file contents. It contains no advertising SDK and does not track you across
+    apps or websites.
+  </p>
+
+  <p>We receive information in three circumstances:</p>
+
+  <ul>
+    <li>
+      <strong>Support.</strong> If you contact us, we receive your email address, message, and any
+      logs or attachments that you choose to send.
+    </li>
+    <li>
+      <strong>Website delivery.</strong> The site contains no analytics or advertising code. Its
+      host may process ordinary request data, such as an IP address, user agent, requested page,
+      date, and time, to deliver and secure the site. The site stores your colour-theme choice in
+      your browser's local storage.
+    </li>
+    <li>
+      <strong>Apple diagnostics.</strong> If you choose to share analytics with app developers in
+      your device settings, Apple can provide us with privacy-protected App Store usage metrics and
+      crash or diagnostic reports. Apple controls this collection and your consent.
+    </li>
+  </ul>
+
+  <p>We do not sell personal information or share it for advertising.</p>
+
+  <h2>3. Data on your device</h2>
+
+  <p>The app stores the data needed to provide its features, including:</p>
+
+  <ul>
+    <li>your local catalogue, library entries, collections, flags, and Read Later items;</li>
+    <li>titles, descriptions, tags, cover references, and other publication metadata;</li>
+    <li>reading progress, history, sessions, insights, bookmarks, notes, and reminders;</li>
+    <li>Source lists, installed Source plugins and settings, and Source website data such as cookies;</li>
+    <li>Server configurations and cached Server metadata;</li>
+    <li>local files, downloaded chapters and publications, thumbnails, and caches;</li>
+    <li>app preferences and diagnostic logs; and</li>
+    <li>backup files that Suwatte creates at your request or on the schedule you select.</li>
+  </ul>
+
+  <p>
+    The app uses file timestamps, system uptime, and user defaults for file management, elapsed-time
+    measurement, and preferences. It does not use these system interfaces to identify you.
+  </p>
+
+  <h2>4. Apple services</h2>
+
+  <p>
+    Suwatte uses several separate Apple services. Apple handles data in those services under your
+    Apple Account and Apple's privacy terms.
+  </p>
+
+  <div class="table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>What Suwatte uses it for</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Private CloudKit database</td>
+          <td>
+            Syncs the app database between your devices. This includes library and publication
+            metadata, Source and Server configuration, installed Source plugins, progress, history,
+            sessions, bookmarks and their images or notes, feed settings, and related identifiers.
+          </td>
+        </tr>
+        <tr>
+          <td>iCloud Drive</td>
+          <td>
+            Holds physical files that you place in Suwatte's iCloud library or another iCloud Drive
+            folder that you select.
+          </td>
+        </tr>
+        <tr>
+          <td>iCloud Keychain</td>
+          <td>
+            Can sync Server credentials, Comic Vine and Metron credentials, and values that a
+            Source places in its secure store.
+          </td>
+        </tr>
+        <tr>
+          <td>iCloud key-value storage</td>
+          <td>
+            Syncs small preferences, such as onboarding state and some Source and reading choices.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Apple documents that records in a private CloudKit database are not visible to the app
+    developer in the developer portal. They count against your iCloud storage and are available to
+    the app while you use the signed-in Apple Account.
+  </p>
+
+  <h2>5. Services that you connect</h2>
+
+  <p>
+    The app makes these connections only to provide a feature that you configure. The destination
+    receives ordinary network information, including your IP address and user agent, and handles
+    the request under its own terms and privacy policy.
+  </p>
+
+  <h3>5.1 Sources and websites</h3>
+
+  <p>
+    A Source is a third-party plugin that runs on your device with network access. It can initiate requests,
+    use website cookies, and use ordinary and secure storage scoped to that Source. It can send
+    search requests, authentication data, library actions, or reading progress to the site that it
+    supports. Install Sources only from lists that you trust.
+  </p>
+
+  <h3>5.2 Komga, Kavita, and OPDS Servers</h3>
+
+  <p>
+    Requests go directly from your device to the Server address that you enter. Suwatte can send
+    credentials and reading progress to a compatible Server. Remote Servers must use HTTPS. The app
+    permits HTTP only for a local-network Server and warns before sending credentials without HTTPS.
+  </p>
+
+  <h3>5.3 Comic Vine and Metron</h3>
+
+  <p>
+    If you connect one of these optional metadata providers, Suwatte can send a title, year,
+    publisher, series identifier, or issue number derived from a local file or its metadata. It uses
+    the response to match and enrich your local catalogue. Automatic matching is a setting that you
+    can turn off.
+  </p>
+
+  <h2>6. Backups</h2>
+
+  <p>
+    A Suwatte JSON backup can contain Source-list addresses, installed-Source metadata and settings,
+    title metadata, library entries, flags, collections, progress, chapter and page state,
+    bookmarks, linked titles, and Read Later items. It does not contain credentials, installed
+    Source plugin files, cover thumbnails, publication files, or downloaded chapter pages.
+  </p>
+
+  <p>
+    A Suwatte backup is different from an Apple device backup, CloudKit sync, iCloud Drive, and
+    iCloud Keychain. An automatic Suwatte backup remains on the device until you export or delete
+    it. You control any location to which you export it.
+  </p>
+
+  <h2>7. Retention and deletion</h2>
+
+  <ul>
+    <li>
+      <strong>Device data.</strong> It remains until you remove it in the app or delete the app.
+      Files stored outside the app's container remain where you placed them.
+    </li>
+    <li>
+      <strong>Apple services.</strong> CloudKit, iCloud Drive, key-value storage, and synchronizable
+      Keychain data can outlive one local installation. Manage them through the app's individual
+      controls and the iCloud controls that Apple provides for your account. Deleting the app from
+      one device does not by itself erase every cloud copy.
+    </li>
+    <li>
+      <strong>Connected services.</strong> Remove a Source, Server, or metadata-provider connection
+      to stop future requests. Contact the service operator to exercise rights over data that it
+      received.
+    </li>
+    <li>
+      <strong>Support.</strong> We retain support messages only as long as reasonably necessary to
+      answer the request, maintain a record of the resolution, protect the service, or meet a legal
+      obligation.
+    </li>
+    <li>
+      <strong>Website preference.</strong> Clear this site's data in your browser to remove the
+      saved theme.
+    </li>
+  </ul>
+
+  <h2>8. Security</h2>
+
+  <p>
+    Credentials are stored in the operating system Keychain and are omitted from Suwatte JSON
+    backups. Private CloudKit data is protected by Apple's service security. Remote Server and
+    metadata-provider connections use HTTPS; local-network Servers can use HTTP only under the
+    app's local transport policy.
+  </p>
+
+  <p>
+    A third-party Source has network capabilities and can be unsafe or defective. Source isolation
+    reduces access between Sources, but it does not make an untrusted plugin trustworthy.
+  </p>
+
+  <h2>9. Your rights</h2>
+
+  <p>
+    Depending on where you live, you may have rights to ask what personal data we hold about you,
+    request a copy, correct it, delete it, restrict or object to its use, or complain to a privacy
+    authority. Write to <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>. Because
+    the app sends us no account, library, or telemetry data, a request to us will normally concern
+    support correspondence or website records. Data held by Apple or a service you connected must
+    be managed with that provider.
+  </p>
+
+  <h2>10. Children</h2>
+
+  <p>
+    Suwatte is not directed to children, and we do not knowingly collect personal data from a child.
+    The content available in the app depends on the files and services that the user configures.
+    Safe Mode hides content that third-party metadata marks as mature, but it is not a parental
+    control and cannot guarantee that content is classified correctly.
+  </p>
+
+  <h2>11. Changes</h2>
+
+  <p>
+    We may update this policy when the app, website, or service providers change. The version and
+    effective date at the top identify the current policy. Material changes will be called out
+    where practical.
+  </p>
+
+  <h2>12. Contact</h2>
+
+  <p>
+    Send privacy questions, requests, or complaints to{' '}
+    <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>.
+  </p>
+</PageLayout>
+
+<style>
+  .callout {
+    margin-block: 0 2rem;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--bg-sunken);
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 0.97rem;
+  }
+</style>

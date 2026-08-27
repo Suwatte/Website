@@ -1,0 +1,145 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import { SITE, LEGAL } from '../consts';
+
+// Exempt from the site's ASD-STE100 rules. See scripts/ste-check.mjs.
+// This page supplements Apple's standard EULA. It is not a custom App Store EULA.
+---
+
+<PageLayout
+  title="Terms of use"
+  description="Rules for using the Suwatte app and website."
+  meta={`Version ${LEGAL.termsVersion} · Effective ${LEGAL.termsEffective}`}
+>
+  <div class="callout">
+    <p>
+      <strong>In short.</strong> Suwatte is a reader. It does not come with content or a catalogue.
+      You choose the files, Servers, and third-party Sources that it uses, and you must use them
+      lawfully.
+    </p>
+  </div>
+
+  <h2>1. The app licence</h2>
+
+  <p>
+    If you download Suwatte from Apple's App Store, your licence to use the app is governed by the{' '}
+    <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">
+      Apple Standard End User License Agreement
+    </a>. We do not replace it with a custom App Store licence.
+  </p>
+
+  <p>
+    These terms set rules for using the app and this website. They supplement the Apple Standard
+    EULA. If these terms conflict with that EULA about your licence to the app, the EULA controls.
+  </p>
+
+  <h2>2. What Suwatte does</h2>
+
+  <p>
+    Suwatte reads content that you add in one of three ways: physical files that you select,
+    Servers that you connect, and Sources that you install. Suwatte ships with no Sources, content,
+    or catalogue. We do not operate a content service, and content requests do not pass through a
+    Suwatte server.
+  </p>
+
+  <h2>3. Lawful use</h2>
+
+  <p>You must not use Suwatte or this website to:</p>
+
+  <ul>
+    <li>infringe copyright, trade mark, privacy, or another person's rights;</li>
+    <li>access or distribute material that you are not lawfully entitled to use;</li>
+    <li>break a law or the terms of a service that you choose to access;</li>
+    <li>circumvent access controls or interfere with a service; or</li>
+    <li>create or distribute a Source for one of those purposes.</li>
+  </ul>
+
+  <p>
+    You are responsible for the content and services that you choose and for protecting the
+    credentials that you enter.
+  </p>
+
+  <h2>4. Third-party Sources, Servers, and websites</h2>
+
+  <p>
+    A Source is a third-party plugin that runs on your device with network access. A Server is a
+    Komga, Kavita, or OPDS service that you operate or are authorised to use. We do not write, review,
+    approve, endorse, or control third-party Sources, Source lists, Servers, or the websites that
+    they access.
+  </p>
+
+  <p>
+    Those services can change or stop working without notice. Their own terms and privacy policies
+    apply. Install Sources only from lists that you trust, and connect only to Servers that you are
+    authorised to use.
+  </p>
+
+  <h2>5. Intellectual property</h2>
+
+  <p>
+    The Suwatte app, website, name, marks, and original design are protected by intellectual
+    property law. These terms do not give you ownership of them or of third-party content.
+  </p>
+
+  <p>
+    We do not host content reached through a third-party Source or Server. Send a notice about that
+    content to the operator that hosts it. If you believe the app itself or material that we publish
+    on this website infringes your rights, email{' '}
+    <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a> with your contact details, a
+    description of the work, the location of the material, and the reason that you believe the use
+    is unauthorised.
+  </p>
+
+  <h2>6. Your data and backups</h2>
+
+  <p>
+    You are responsible for keeping copies of data that matters to you. iCloud sync, Suwatte JSON
+    backups, and downloaded files are different systems and do not contain the same information.
+    Read the <a href="/privacy/">privacy policy</a> and the{' '}
+    <a href="/docs/backups/">backup guide</a> for details.
+  </p>
+
+  <h2>7. Availability and changes</h2>
+
+  <p>
+    We may add, change, suspend, or remove features and publish updates. We cannot guarantee that a
+    third-party Source, Server, website, or file format will remain available or compatible.
+  </p>
+
+  <p>
+    We may update these terms. The version and effective date at the top identify the current
+    terms. We will call out material changes where practical.
+  </p>
+
+  <h2>8. This website</h2>
+
+  <p>
+    The website and its documentation are provided for general information. We try to keep them
+    accurate, but they may contain errors or lag behind the current app. To the extent permitted by
+    law, the website is provided as is. Nothing here limits a consumer right that cannot lawfully be
+    limited.
+  </p>
+
+  <h2>9. Contact</h2>
+
+  <p>
+    Send questions about these terms to{' '}
+    <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>.
+  </p>
+</PageLayout>
+
+<style>
+  .callout {
+    margin-block: 0 2rem;
+    padding: 1.2rem 1.4rem;
+    border: 1px solid var(--border);
+    border-inline-start: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--bg-sunken);
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 0.97rem;
+  }
+</style>

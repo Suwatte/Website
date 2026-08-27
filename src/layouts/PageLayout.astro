@@ -1,0 +1,68 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Shown under the title, e.g. "Last updated 6 August 2026". */
+  meta?: string;
+}
+
+const { title, description, meta } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="page shell">
+    <header class="page__head">
+      <h1>{title}</h1>
+      <p class="page__description">{description}</p>
+      {meta && <p class="page__meta">{meta}</p>}
+    </header>
+
+    <div class="prose">
+      <slot />
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLTableElement>('.prose table').forEach((table) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-scroll';
+    table.replaceWith(wrapper);
+    wrapper.append(table);
+  });
+</script>
+
+<style>
+  .page {
+    max-width: 52rem;
+    padding-block: 3rem 4rem;
+  }
+
+  .page__head {
+    padding-block-end: 1.6rem;
+    margin-block-end: 2.2rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .page__head h1 {
+    font-size: var(--step-4);
+    letter-spacing: -0.034em;
+  }
+
+  .page__description {
+    margin: 0.7rem 0 0;
+    max-width: 58ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .page__meta {
+    margin: 1rem 0 0;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+</style>

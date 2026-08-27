@@ -1,0 +1,257 @@
+---
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import DocsSidebar from '../components/DocsSidebar.astro';
+import DocsToc from '../components/DocsToc.astro';
+import DocsSearch from '../components/DocsSearch.astro';
+import type { SidebarGroup } from '../consts';
+
+interface Props {
+  title: string;
+  description: string;
+  groups: SidebarGroup[];
+  base: string;
+  sectionLabel: string;
+  currentSlug: string;
+  headings: MarkdownHeading[];
+}
+
+const { title, description, groups, base, sectionLabel, currentSlug, headings } = Astro.props;
+
+// Prev/next follow sidebar order, which is the order the docs are meant to be
+// read in — not alphabetical or file order.
+const flat = groups.flatMap((group) => group.entries);
+const index = flat.findIndex((entry) => entry.slug === currentSlug);
+const previous = index > 0 ? flat[index - 1] : undefined;
+const next = index >= 0 && index < flat.length - 1 ? flat[index + 1] : undefined;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="docs shell">
+    <aside class="docs__rail docs__rail--nav">
+      <div class="docs__rail-inner">
+        <DocsSearch />
+        <div class="docs__desktop-nav">
+          <p class="docs__section">{sectionLabel}</p>
+          <DocsSidebar groups={groups} base={base} currentSlug={currentSlug} />
+        </div>
+        <details class="docs__mobile-nav">
+          <summary>Browse {sectionLabel}</summary>
+          <DocsSidebar groups={groups} base={base} currentSlug={currentSlug} />
+        </details>
+      </div>
+    </aside>
+
+    <article class="docs__body">
+      <header class="docs__header">
+        <h1>{title}</h1>
+        <p class="docs__description">{description}</p>
+      </header>
+
+      <div class="prose" data-pagefind-body>
+        <slot />
+      </div>
+
+      <nav class="pager" aria-label="Documentation pages">
+        {
+          previous ? (
+            <a class="pager__link pager__link--prev" href={`${base}/${previous.slug}/`}>
+              <span>Previous</span>
+              <strong>{previous.label}</strong>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          next && (
+            <a class="pager__link pager__link--next" href={`${base}/${next.slug}/`}>
+              <span>Next</span>
+              <strong>{next.label}</strong>
+            </a>
+          )
+        }
+      </nav>
+    </article>
+
+    <aside class="docs__rail docs__rail--toc">
+      <div class="docs__rail-inner">
+        <DocsToc headings={headings} />
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  // Astro's Markdown processor gives every heading an id, so deep links already
+  // work. This just exposes a click target for copying one.
+  document.querySelectorAll<HTMLElement>('.prose :is(h2, h3, h4)[id]').forEach((heading) => {
+    const anchor = document.createElement('a');
+    anchor.className = 'heading-anchor';
+    anchor.href = `#${heading.id}`;
+    anchor.textContent = '#';
+    anchor.setAttribute('aria-label', `Link to “${heading.textContent?.trim()}”`);
+    heading.append(anchor);
+  });
+
+  // Markdown tables overflow on narrow screens unless they get their own
+  // scroll container.
+  document.querySelectorAll<HTMLTableElement>('.prose table').forEach((table) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-scroll';
+    table.replaceWith(wrapper);
+    wrapper.append(table);
+  });
+</script>
+
+<style>
+  .docs {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr) 13rem;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+    padding-block: 2.5rem 4rem;
+  }
+
+  .docs__rail-inner {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    padding-block-end: 1rem;
+  }
+
+  .docs__section {
+    margin: 1.6rem 0 0.9rem;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .docs__mobile-nav {
+    display: none;
+  }
+
+  .docs__header {
+    padding-block-end: 1.6rem;
+    margin-block-end: 2rem;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .docs__header h1 {
+    font-size: var(--step-4);
+    letter-spacing: -0.034em;
+  }
+
+  .docs__description {
+    margin: 0.7rem 0 0;
+    max-width: 58ch;
+    font-size: var(--step-1);
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-block-start: 4rem;
+    padding-block-start: 2rem;
+    border-block-start: 1px solid var(--border);
+  }
+
+  .pager__link {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: border-color 0.16s ease, background-color 0.16s ease;
+  }
+
+  .pager__link:hover {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
+
+  .pager__link--next {
+    text-align: end;
+    grid-column: 2;
+  }
+
+  .pager__link span {
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .pager__link strong {
+    font-family: var(--font-ui);
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  @media (max-width: 68rem) {
+    .docs {
+      grid-template-columns: 14rem minmax(0, 1fr);
+    }
+
+    .docs__rail--toc {
+      display: none;
+    }
+  }
+
+  @media (max-width: 50rem) {
+    .docs {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .docs__rail--nav .docs__rail-inner {
+      position: static;
+      max-height: none;
+      overflow: visible;
+    }
+
+    .docs__rail--nav {
+      padding-block-end: 1rem;
+      margin-block-end: 1rem;
+      border-block-end: 1px solid var(--border);
+    }
+
+    .docs__desktop-nav {
+      display: none;
+    }
+
+    .docs__mobile-nav {
+      display: block;
+      margin-block-start: 0.75rem;
+      font-family: var(--font-ui);
+    }
+
+    .docs__mobile-nav summary {
+      padding: 0.55rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-raised);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .docs__mobile-nav[open] summary {
+      margin-block-end: 1rem;
+      color: var(--text);
+    }
+  }
+</style>

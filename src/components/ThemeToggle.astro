@@ -1,0 +1,84 @@
+---
+// Two-state toggle. The stored value always wins over the system preference
+// once set, so a reader who picks light stays in light after dark falls.
+---
+
+<button class="theme-toggle" type="button" aria-live="polite" data-theme-toggle>
+  <span class="visually-hidden" data-theme-label>Switch to dark theme</span>
+  <svg class="theme-toggle__icon theme-toggle__icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.4" />
+    <g stroke-linecap="round">
+      <path d="M12 2.6v2.6M12 18.8v2.6M2.6 12h2.6M18.8 12h2.6" />
+      <path d="M5.4 5.4l1.8 1.8M16.8 16.8l1.8 1.8M18.6 5.4l-1.8 1.8M7.2 16.8l-1.8 1.8" />
+    </g>
+  </svg>
+  <svg class="theme-toggle__icon theme-toggle__icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20.2 14.4A8.4 8.4 0 0 1 9.6 3.8a8.4 8.4 0 1 0 10.6 10.6Z" stroke-linejoin="round" />
+  </svg>
+</button>
+
+<style>
+  .theme-toggle {
+    display: inline-grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+  }
+
+  .theme-toggle:hover {
+    background: var(--accent-wash);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .theme-toggle__icon {
+    grid-area: 1 / 1;
+    width: 1.15rem;
+    height: 1.15rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+  }
+
+  /* Show the icon for the theme you would switch *to*. */
+  .theme-toggle__icon--sun {
+    display: none;
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__icon--sun {
+    display: block;
+  }
+
+  :global(:root[data-theme='dark']) .theme-toggle__icon--moon {
+    display: none;
+  }
+</style>
+
+<script>
+  const KEY = 'suwatte-theme';
+
+  function sync(button: HTMLElement) {
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    const label = button.querySelector('[data-theme-label]');
+    if (label) {
+      label.textContent = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((button) => {
+    sync(button);
+    button.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem(KEY, next);
+      document.querySelectorAll<HTMLElement>('[data-theme-toggle]').forEach(sync);
+    });
+  });
+</script>

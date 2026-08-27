@@ -1,0 +1,536 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AppGallery from '../components/AppGallery.astro';
+import type { GalleryShot } from '../components/AppGallery.astro';
+import AppShot from '../components/AppShot.astro';
+import { SITE, EXTERNAL_LINKS } from '../consts';
+import cbrReaderShot from '../../marketing/app-store/raw/iphone-17-pro/cbr-reader.png';
+import cbzReaderShot from '../../marketing/app-store/raw/iphone-17-pro/cbz-reader.png';
+import epubAppearanceShot from '../../marketing/app-store/raw/iphone-17-pro/epub-appearance.png';
+import epubReaderShot from '../../marketing/app-store/raw/iphone-17-pro/epub-reader.png';
+import historyShot from '../../marketing/app-store/raw/iphone-17-pro/history.png';
+import insightsShot from '../../marketing/app-store/raw/iphone-17-pro/insights.png';
+import localLibraryShot from '../../marketing/app-store/raw/iphone-17-pro/local-library.png';
+import pdfReaderShot from '../../marketing/app-store/raw/iphone-17-pro/pdf-reader.png';
+import pagedMangaShot from '../../marketing/app-store/raw/iphone-17-pro/reading-mode-paged-manga.png';
+
+const galleryShots: GalleryShot[] = [
+  {
+    id: 'library',
+    label: 'Local Library',
+    src: localLibraryShot,
+  },
+  {
+    id: 'epub',
+    label: 'EPUB Reader',
+    src: epubReaderShot,
+  },
+  {
+    id: 'comic',
+    label: 'Comic Reader',
+    src: cbrReaderShot,
+  },
+  {
+    id: 'pdf',
+    label: 'PDF Reader',
+    src: pdfReaderShot,
+  },
+  {
+    id: 'insights',
+    label: 'Insights',
+    src: insightsShot,
+  },
+];
+
+const shelves = [
+  {
+    name: 'Sources',
+    body: 'Install sources from a list. Search them in one place.',
+    facts: ['Global search', 'Source settings', 'Automatic updates'],
+    href: '/docs/sources/',
+  },
+  {
+    name: 'Servers',
+    body: 'Connect Komga, Kavita or OPDS.',
+    facts: ['Komga', 'Kavita', 'OPDS'],
+    href: '/docs/servers/',
+  },
+  {
+    name: 'Files',
+    body: 'Add CBZ, CBR, PDF and EPUB files.',
+    facts: ['CBZ', 'CBR', 'PDF', 'EPUB'],
+    href: '/docs/local-files/',
+  },
+];
+
+const readerFeatures = [
+  {
+    title: 'Four reading modes',
+    body: 'Choose Paged Manga, Paged Comic, Paged Vertical or Vertical.',
+  },
+  {
+    title: 'Your files',
+    body: 'Open CBR, CBZ, EPUB and PDF files from one library.',
+  },
+  {
+    title: 'Bookmarks',
+    body: 'Save a page and return to it later.',
+  },
+  {
+    title: 'Continue reading',
+    body: 'Close the reader. Suwatte keeps your page.',
+  },
+];
+
+const sync = [
+  {
+    title: 'iCloud',
+    body: 'Sync your library, collections, flags and progress.',
+  },
+  {
+    title: 'Servers',
+    body: 'Send progress to Komga and Kavita.',
+  },
+  {
+    title: 'Sources',
+    body: 'Send progress to sources that support it.',
+  },
+  {
+    title: 'Trackers',
+    body: 'Update matched tracker entries.',
+  },
+];
+---
+
+<BaseLayout title={`${SITE.name} — ${SITE.tagline}`} bareTitle>
+  <section class="hero">
+    <div class="shell hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">For iPhone and iPad</p>
+        <h1 class="hero__title">Read manga, comics and novels.</h1>
+        <p class="lede">
+          Use your own sources, servers and files. Sync your library with iCloud.
+        </p>
+
+        <div class="hero__actions">
+          {
+            EXTERNAL_LINKS.appStore ? (
+              <a class="btn" href={EXTERNAL_LINKS.appStore}>
+                Download on the App Store
+              </a>
+            ) : (
+              <a class="btn" href="/docs/introduction/">
+                Read the guides
+              </a>
+            )
+          }
+
+          {
+            EXTERNAL_LINKS.testFlight ? (
+              <a class="btn btn--ghost" href={EXTERNAL_LINKS.testFlight}>
+                Join TestFlight
+              </a>
+            ) : null
+          }
+        </div>
+
+        <p class="hero__requirement">Requires {SITE.minimumOS} or later.</p>
+      </div>
+
+      <div class="hero__demo">
+        <AppGallery shots={galleryShots} />
+        <p class="screenshot-credit">
+          <a href="https://www.peppercarrot.com">Pepper &amp; Carrot</a> by David Revoy and
+          contributors, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+          Screenshots cropped. No endorsement.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="library-heading">
+    <div class="shell">
+      <header class="section__head">
+        <p class="eyebrow">One library</p>
+        <h2 class="section__title" id="library-heading">Add titles in three ways.</h2>
+        <p class="section__lede">
+          Use sources, connect a server or add local files. Suwatte puts them in one library.
+        </p>
+      </header>
+
+      <ul class="shelves">
+        {
+          shelves.map((shelf) => (
+            <li class="shelf">
+              <h3 class="shelf__name">{shelf.name}</h3>
+              <p class="shelf__body">{shelf.body}</p>
+              <ul class="shelf__facts">
+                {shelf.facts.map((fact) => (
+                  <li>{fact}</li>
+                ))}
+              </ul>
+              <a class="shelf__link" href={shelf.href}>
+                {shelf.name} guide<span aria-hidden="true"> →</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="section__figure">
+        <div class="section__phone">
+          <AppShot
+            src={localLibraryShot}
+            label="Local Library with EPUB, PDF, CBR and CBZ files"
+          />
+        </div>
+        <div class="section__phone">
+          <AppShot
+            src={historyShot}
+            label="Reading history for local files"
+          />
+        </div>
+        <div class="section__phone">
+          <AppShot
+            src={insightsShot}
+            label="Reading insights"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="reader-heading">
+    <div class="shell">
+      <header class="section__head">
+        <p class="eyebrow">The reader</p>
+        <h2 class="section__title" id="reader-heading">Choose a reading mode.</h2>
+        <p class="section__lede">Set one mode for all titles, or one mode for one title.</p>
+      </header>
+
+      <div class="reader__layout">
+        <ul class="features">
+          {
+            readerFeatures.map((feature) => (
+              <li class="feature">
+                <h3 class="feature__title">{feature.title}</h3>
+                <p class="feature__body">{feature.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="reader__gallery">
+          <div class="reader__shots">
+            <AppShot src={cbrReaderShot} label="Pepper & Carrot in the CBR reader" caption="CBR" />
+            <AppShot src={cbzReaderShot} label="Pepper & Carrot in the CBZ reader" caption="CBZ" />
+            <AppShot
+              src={pagedMangaShot}
+              label="Pepper & Carrot in right-to-left Paged Manga mode"
+              caption="Paged Manga"
+            />
+            <AppShot
+              src={epubReaderShot}
+              label="Alice’s Adventures in Wonderland in the EPUB reader"
+              caption="EPUB"
+            />
+            <AppShot
+              src={epubAppearanceShot}
+              label="Appearance controls for an EPUB"
+              caption="Book Appearance"
+            />
+            <AppShot
+              src={pdfReaderShot}
+              label="Pepper & Carrot in the PDF reader"
+              caption="PDF"
+            />
+          </div>
+          <p class="screenshot-credit">
+            <a href="https://www.peppercarrot.com">Pepper &amp; Carrot</a> by David Revoy and
+            contributors, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+            Shown in Suwatte; screenshot cropped. No endorsement.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="sync-heading">
+    <div class="shell">
+      <header class="section__head">
+        <p class="eyebrow">Your copy</p>
+        <h2 class="section__title" id="sync-heading">Keep your library in sync.</h2>
+        <p class="section__lede">
+          iCloud syncs your devices. Suwatte also sends progress to supported services.
+        </p>
+      </header>
+
+      <div class="sync__layout">
+        <ul class="features features--tight">
+          {
+            sync.map((item) => (
+              <li class="feature">
+                <h3 class="feature__title">{item.title}</h3>
+                <p class="feature__body">{item.body}</p>
+              </li>
+            ))
+          }
+        </ul>
+
+      </div>
+
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* --------------------------------- hero --------------------------------- */
+
+  .hero {
+    padding-block: clamp(3rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+    background:
+      radial-gradient(80% 60% at 15% 0%, var(--accent-wash), transparent 60%),
+      var(--bg);
+  }
+
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+
+  .hero__title {
+    margin-block: 0.7rem 1.1rem;
+    font-size: var(--step-5);
+    font-weight: 800;
+    letter-spacing: -0.038em;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-block-start: 1.9rem;
+  }
+
+  .hero__requirement {
+    margin-block-start: 1rem;
+    margin-block-end: 0;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+
+  /* ------------------------------- sections ------------------------------- */
+
+  .section {
+    padding-block: clamp(3.5rem, 8vw, 6rem);
+  }
+
+  .section--raised {
+    background: var(--bg-sunken);
+    border-block: 1px solid var(--border);
+  }
+
+  .section__head {
+    max-width: 52ch;
+    margin-block-end: clamp(2rem, 4vw, 3rem);
+  }
+
+  .section__title {
+    margin-block: 0.6rem 0.9rem;
+    font-size: var(--step-4);
+    letter-spacing: -0.032em;
+  }
+
+  .section__lede {
+    margin: 0;
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  .section__lede code {
+    font-size: 0.86em;
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+  }
+
+  .section__figure {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 11rem));
+    justify-content: center;
+    gap: clamp(1rem, 3vw, 1.75rem);
+    margin-block-start: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .section__phone {
+    width: 100%;
+    max-width: 11rem;
+  }
+
+  /* -------------------------------- shelves ------------------------------- */
+
+  .shelves {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .shelf {
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 1.5rem 1.4rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-raised);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shelf__name {
+    font-size: var(--step-2);
+    letter-spacing: -0.028em;
+  }
+
+  .shelf__body {
+    margin-block: 0.6rem 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.97rem;
+  }
+
+  .shelf__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0 0 1.4rem;
+    padding: 0;
+  }
+
+  .shelf__facts li {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: var(--accent-wash);
+    color: var(--accent);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  .shelf__link {
+    margin-block-start: auto;
+    font-family: var(--font-ui);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* ------------------------------- features ------------------------------- */
+
+  .features {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .feature {
+    padding-block-start: 1.2rem;
+    border-block-start: 2px solid var(--accent);
+  }
+
+  .features--tight .feature {
+    border-block-start-width: 1px;
+    border-block-start-color: var(--border-strong);
+  }
+
+  .feature__title {
+    font-size: var(--step-1);
+    letter-spacing: -0.024em;
+  }
+
+  .feature__body {
+    margin-block: 0.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.97rem;
+  }
+
+  .reader__layout,
+  .sync__layout {
+    display: grid;
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: start;
+  }
+
+  .reader__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  }
+
+  .sync__layout .features {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .reader__shots {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .reader__gallery {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .screenshot-credit {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+
+  /* ------------------------------ responsive ------------------------------ */
+
+  @media (max-width: 58rem) {
+    .hero__grid,
+    .reader__layout,
+    .sync__layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .shelves {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sync__layout .features {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 38rem) {
+    .section__figure {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .section__phone {
+      max-width: none;
+    }
+
+    .reader__shots {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .sync__layout .features {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
