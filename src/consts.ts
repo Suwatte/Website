@@ -3,7 +3,7 @@ export const SITE = {
   tagline: 'Read your way.',
   description:
     'Suwatte is a reader for manga, manhwa, manhua, comics and novels on iPhone and iPad. Add your own sources, connect your own servers, and let iCloud keep your devices the same.',
-  url: 'https://suwatte.app',
+  url: 'https://suwatte.mantton.com',
   github: 'https://github.com/Suwatte',
   patreon: 'https://www.patreon.com/mantton',
   minimumOS: 'iOS 17',
