@@ -31,7 +31,8 @@ Bring your own files, connect your own server, or install the Sources that you t
 ## Your content stays yours
 
 Suwatte ships with no Sources, catalogue, or bundled books. You choose the files and services that
-the app can access. Suwatte has no advertising or developer-operated product analytics.
+the app can access. Suwatte has no advertising. It uses Google Analytics for Firebase to understand
+feature use and failures; see the [privacy policy](https://suwatte.app/privacy/).
 
 For help, email [help@mantton.com](mailto:help@mantton.com).
 

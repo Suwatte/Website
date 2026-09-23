@@ -16,10 +16,10 @@ author. Use it as a filter, not as a guarantee.
 ## Incognito Mode
 
 **Settings → Content Settings → Incognito Mode** stops Suwatte from writing reading progress. All
-of the other functions continue. You can browse, read and download.
+of the other functions continue. You can browse, read and download. It does not turn off Firebase Analytics.
 
 Your history, your streaks and your goals come from your progress. Reading in Incognito Mode does
-not go into any of them, and nothing syncs.
+not go into any of them. Other app data can still sync through iCloud.
 
 ## Where your credentials are
 
@@ -49,9 +49,14 @@ Source values between your devices.
 **Metadata searches, to providers that you connect.** If you connect Comic Vine or Metron, Suwatte
 can send title, year, publisher, series, or issue details to find a match.
 
-Suwatte has no developer-operated analytics or crash-reporting SDK. Apple can provide opt-in App
-Store diagnostics under your device's analytics setting. Read the [privacy policy](/privacy/) for
-the full description.
+**App analytics, to Google.** Suwatte uses Google Analytics for Firebase to help us understand feature use and failures.
+Events can include Source identifiers, counts, duration, content format, and action results.
+Firebase also collects installation and device identifiers, technical data, and approximate location.
+Our product events do not send book titles, search text, file contents, Server addresses, or credentials.
+
+The current app has no analytics opt-out. Incognito Mode does not turn analytics off.
+Apple's device setting for sharing diagnostics with developers does not control Firebase Analytics.
+Suwatte does not include Firebase Crashlytics. Read the [privacy policy](/privacy/) for the full description.
 
 Also remember that a Source is a plugin with network access that runs on your device. A Source
 can make a request that you did not start. Install a source only from a list that you trust.

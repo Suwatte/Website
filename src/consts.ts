@@ -23,8 +23,8 @@ export const LEGAL = {
   /** Where we are based. Used in the privacy policy. */
   country: 'Canada',
 
-  privacyEffective: '27 August 2026',
-  privacyVersion: '1.1',
+  privacyEffective: '21 September 2026',
+  privacyVersion: '1.2',
   termsEffective: '27 August 2026',
   termsVersion: '1.1',
 } as const;

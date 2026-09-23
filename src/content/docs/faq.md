@@ -54,10 +54,13 @@ then download the chapters that you want.
 
 ## Does Suwatte collect data about me?
 
-Suwatte has no developer-operated analytics or crash-reporting SDK. Apple can provide opt-in App
-Store diagnostics. Apple services and the Sources, Servers, and metadata providers that you choose
-can receive data needed for their features. The [privacy policy](/privacy/) gives the full
-description.
+Yes. Suwatte uses Google Analytics for Firebase to understand feature use and failures.
+It collects usage events, installation and device identifiers, technical data, and approximate location.
+Our product events do not include book titles, search text, file contents, Server addresses, or credentials.
+Incognito Mode does not turn analytics off, and the current app has no analytics opt-out.
+
+Apple can also provide opt-in App Store diagnostics. Apple services and the services that you connect receive data needed for their features.
+The [privacy policy](/privacy/) gives the full description.
 
 ## Why did a source stop working?
 

@@ -13,11 +13,11 @@ import { SITE, LEGAL } from '../consts';
 >
   <div class="callout">
     <p>
-      <strong>In short.</strong> Suwatte has no account, advertising, or developer-operated product
-      analytics. Your library is held on your device and in your private iCloud storage. Requests
-      go directly to the Sources, Servers, and metadata providers that you choose. We receive
-      information when you contact support or visit this website, and Apple can provide opt-in App
-      Store diagnostics.
+      <strong>In short.</strong> Suwatte has no account or advertising. Your library is held on your
+      device and in your private iCloud storage. Content requests go directly to the Sources,
+      Servers, and metadata providers that you choose. The app uses Google Analytics for Firebase
+      to help us understand feature use and improve reliability. We also receive information when
+      you contact support or visit this website, and Apple can provide opt-in App Store diagnostics.
     </p>
   </div>
 
@@ -38,15 +38,30 @@ import { SITE, LEGAL } from '../consts';
   <h2>2. What we receive</h2>
 
   <p>
-    The app contains no developer-operated analytics or crash-reporting SDK. It does not send us
-    your library, reading history, search terms, device identifiers, location, Server addresses,
-    credentials, or file contents. It contains no advertising SDK and does not track you across
-    apps or websites.
+    The app includes Google Analytics for Firebase. This sends usage events and technical data
+    to Google, where we can use analytics reports to understand which features are used and where
+    operations succeed or fail. The app does not include an advertising SDK or Firebase Crashlytics.
   </p>
 
-  <p>We receive information in three circumstances:</p>
+  <p>We receive information in these circumstances:</p>
 
   <ul>
+    <li>
+      <strong>App analytics.</strong> Events describe actions such as setup, Source installation,
+      searches, library changes, reading, downloads, backups, and settings changes. Depending on
+      the action, they can include a Source identifier, content format and origin, counts,
+      durations, settings categories, and success or failure categories. Search events record a
+      length range rather than the search text. Our product events do not include book titles,
+      book or chapter identifiers, file contents, Server addresses, passwords, or API keys.
+    </li>
+    <li>
+      <strong>Analytics identifiers and technical data.</strong> Firebase can collect an
+      app-instance identifier, the device's vendor identifier, app and operating-system versions,
+      device information, language, session activity, and approximate location derived from the
+      connection's IP address. These identifiers can link events from an installation; this data
+      is not anonymous merely because Suwatte has no account. We do not request GPS location for
+      analytics. Ad-personalization signals and ad-network registration are disabled in the app.
+    </li>
     <li>
       <strong>Support.</strong> If you contact us, we receive your email address, message, and any
       logs or attachments that you choose to send.
@@ -65,6 +80,28 @@ import { SITE, LEGAL } from '../consts';
   </ul>
 
   <p>We do not sell personal information or share it for advertising.</p>
+
+  <p>
+    Google processes analytics data through its Firebase and Google Analytics services. Processing
+    can take place outside your country. See{' '}
+    <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer">
+      Privacy and Security in Firebase
+    </a>{' '}and Google's{' '}
+    <a href="https://support.google.com/firebase/answer/6318039" target="_blank" rel="noopener noreferrer">
+      analytics data collection description
+    </a> for more information.
+  </p>
+
+  <h3>Analytics and Incognito Mode</h3>
+
+  <p>
+    Analytics is enabled in the current app version, which does not provide an in-app analytics
+    opt-out. Incognito Mode pauses Suwatte's reading-progress records; it does not disable Firebase
+    Analytics or requests to services that you use. Apple's Share With App Developers setting
+    controls Apple diagnostics, not Firebase Analytics. Contact us at{' '}
+    <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a> with analytics privacy questions
+    or requests.
+  </p>
 
   <h2>3. Data on your device</h2>
 
@@ -193,6 +230,14 @@ import { SITE, LEGAL } from '../consts';
 
   <ul>
     <li>
+      <strong>Analytics.</strong> Event and user data is subject to the retention settings of our
+      Google Analytics property and Google's deletion processes. Aggregated reports can remain
+      after event-level data expires. Removing the app does not itself delete analytics already
+      received. You can contact us to request access or deletion. Because we do not associate an
+      email address or Suwatte account with analytics identifiers, we may be unable to locate a
+      particular installation's records from your email address alone.
+    </li>
+    <li>
       <strong>Device data.</strong> It remains until you remove it in the app or delete the app.
       Files stored outside the app's container remain where you placed them.
     </li>
@@ -238,9 +283,9 @@ import { SITE, LEGAL } from '../consts';
     Depending on where you live, you may have rights to ask what personal data we hold about you,
     request a copy, correct it, delete it, restrict or object to its use, or complain to a privacy
     authority. Write to <a href={`mailto:${SITE.supportEmail}`}>{SITE.supportEmail}</a>. Because
-    the app sends us no account, library, or telemetry data, a request to us will normally concern
-    support correspondence or website records. Data held by Apple or a service you connected must
-    be managed with that provider.
+    Suwatte has no account, we may need more information to locate records related to a request,
+    particularly analytics records. Please do not send passwords, API keys, or book files. Data
+    held independently by Apple or a service you connected must be managed with that provider.
   </p>
 
   <h2>10. Children</h2>
