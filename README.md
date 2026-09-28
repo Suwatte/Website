@@ -8,9 +8,11 @@ Suwatte is a reader for manga, manhwa, manhua, comics, and novels on iPhone and 
 Bring your own files, connect your own server, or install the Sources that you trust.
 
 <p align="center">
+  <a href="https://apps.apple.com/app/suwatte/id6448855813"><strong>Download on the App Store</strong></a>
+  ·
   <a href="https://testflight.apple.com/join/8JYvZH1n"><strong>Join TestFlight</strong></a>
   ·
-  <a href="https://suwatte.mantton.com"><strong>Read the guides</strong></a>
+  <a href="https://suwatte.app"><strong>Read the guides</strong></a>
 </p>
 
 ## One library, every format

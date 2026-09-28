@@ -6,6 +6,7 @@ export const SITE = {
   url: 'https://suwatte.app',
   github: 'https://github.com/Suwatte',
   patreon: 'https://www.patreon.com/mantton',
+  appStoreID: '6448855813',
   minimumOS: 'iOS 17',
   supportEmail: 'help@mantton.com',
 } as const;
@@ -35,7 +36,7 @@ export const LEGAL = {
  */
 export const EXTERNAL_LINKS = {
   /** e.g. 'https://apps.apple.com/app/suwatte/id0000000000' */
-  appStore: null as string | null,
+  appStore: 'https://apps.apple.com/app/suwatte/id6448855813',
   /** e.g. 'https://testflight.apple.com/join/xxxxxxxx' */
   testFlight: 'https://testflight.apple.com/join/8JYvZH1n',
   /** e.g. 'https://discord.gg/xxxxxxx' */

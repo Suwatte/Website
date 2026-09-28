@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
-import { SITE } from '../consts';
+import { SITE, EXTERNAL_LINKS } from '../consts';
 
 const path = Astro.url.pathname;
 
@@ -73,6 +73,13 @@ const menuIsCurrent = guides.some((item) => path.startsWith(item.match));
       </div>
 
       <a class="nav__link" href={SITE.patreon} target="_blank" rel="noopener noreferrer">Support Suwatte</a>
+      {
+        EXTERNAL_LINKS.appStore ? (
+          <a class="nav__link nav__link--cta" href={EXTERNAL_LINKS.appStore} target="_blank" rel="noopener noreferrer">
+            Download
+          </a>
+        ) : null
+      }
     </nav>
 
     <div class="masthead__actions">
@@ -104,6 +111,13 @@ const menuIsCurrent = guides.some((item) => path.startsWith(item.match));
       <li>
         <a href={SITE.patreon} target="_blank" rel="noopener noreferrer">Support Suwatte</a>
       </li>
+      {
+        EXTERNAL_LINKS.appStore ? (
+          <li>
+            <a href={EXTERNAL_LINKS.appStore} target="_blank" rel="noopener noreferrer">Download on the App Store</a>
+          </li>
+        ) : null
+      }
     </ul>
   </div>
 </header>
@@ -169,6 +183,16 @@ const menuIsCurrent = guides.some((item) => path.startsWith(item.match));
   .nav__link[aria-expanded='true'] {
     background: var(--accent-wash);
     color: var(--text);
+  }
+
+  .nav__link--cta {
+    background: var(--accent);
+    color: var(--accent-on);
+  }
+
+  .nav__link--cta:hover {
+    background: var(--accent-hover);
+    color: var(--accent-on);
   }
 
   .nav__link--menu svg {

@@ -28,6 +28,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <meta name="apple-itunes-app" content={`app-id=${SITE.appStoreID}`} />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />

@@ -5,6 +5,10 @@ description: Get Suwatte on your device, complete the first-run setup, and find 
 
 Suwatte needs **iOS 17** or a later version. It runs on an iPhone and on an iPad.
 
+Download Suwatte from the [United States App Store](https://apps.apple.com/us/app/suwatte/id6448855813)
+or the [Canadian App Store](https://apps.apple.com/ca/app/suwatte/id6448855813). The App Store release
+is currently limited to those countries. Elsewhere, [join the TestFlight beta](https://testflight.apple.com/join/8JYvZH1n).
+
 ## The first run
 
 The app shows a guided setup the first time that you open it. The setup covers three decisions:

@@ -24,6 +24,8 @@ const columns = [
   {
     heading: 'About',
     links: [
+      ...(EXTERNAL_LINKS.appStore ? [{ label: 'Download on the App Store', href: EXTERNAL_LINKS.appStore }] : []),
+      ...(EXTERNAL_LINKS.testFlight ? [{ label: 'Join the Beta', href: EXTERNAL_LINKS.testFlight }] : []),
       { label: 'Help', href: '/help/' },
       { label: 'Support on Patreon', href: SITE.patreon },
       { label: 'Privacy policy', href: '/privacy/' },
