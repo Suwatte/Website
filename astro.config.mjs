@@ -5,7 +5,8 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://suwatte.app',
-  integrations: [sitemap()],
+  // /open only forwards shared app links; it has nothing to index.
+  integrations: [sitemap({ filter: (page) => !page.endsWith('/open/') })],
   redirects: {
     '/docs': '/docs/introduction/',
     '/developers': '/developers/introduction/',

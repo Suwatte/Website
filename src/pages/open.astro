@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { EXTERNAL_LINKS } from '../consts';
+---
+
+<BaseLayout title="Open in Suwatte" description="A link shared from Suwatte.">
+  <meta slot="head" name="robots" content="noindex" />
+
+  <div class="open shell">
+    <p class="eyebrow" data-kind>Shared link</p>
+    <h1 data-title>Open in Suwatte</h1>
+    <p class="lede" data-detail>
+      Someone shared something from Suwatte with you.
+    </p>
+
+    <div class="open__actions" data-actions hidden>
+      <a class="btn" data-open href="#">Open in Suwatte</a>
+      {
+        EXTERNAL_LINKS.appStore && (
+          <a class="btn btn--ghost" href={EXTERNAL_LINKS.appStore} target="_blank" rel="noopener noreferrer">
+            Get Suwatte
+          </a>
+        )
+      }
+    </div>
+
+    <p class="open__note" data-install hidden></p>
+
+    <p class="lede" data-invalid hidden>
+      This link is incomplete. Ask the person who shared it to send it again.
+    </p>
+    <noscript>
+      <p class="lede">Turn on JavaScript to open this link in Suwatte.</p>
+    </noscript>
+  </div>
+</BaseLayout>
+
+<script>
+  // The link data travels in the fragment, so it never reaches this server.
+  // It is the same base64url JSON the app reads from
+  // suwatte://source-destination?data=…, and it is untrusted: everything shown
+  // here is set as text.
+  type Destination = Record<string, { props?: unknown; title?: string | null }>;
+  interface Payload {
+    v: number;
+    source: string;
+    list?: string;
+    name?: string;
+    destination?: Destination;
+  }
+
+  const KINDS: Record<string, string> = {
+    content: 'Title',
+    chapter: 'Chapter',
+    page: 'Page',
+    list: 'List',
+    search: 'Search',
+  };
+
+  function decode(data: string): Payload | null {
+    try {
+      const base64 = data.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+      const payload = JSON.parse(new TextDecoder().decode(bytes));
+      if (typeof payload?.v !== 'number' || typeof payload?.source !== 'string' || !payload.source) return null;
+      return payload;
+    } catch {
+      return null;
+    }
+  }
+
+  function describe(payload: Payload) {
+    const sourceName = payload.name?.trim() || payload.source;
+    const [kind, value] = Object.entries(payload.destination ?? {})[0] ?? [];
+    if (!kind) {
+      return { kind: 'Source', title: sourceName, detail: 'Open this source in Suwatte.' };
+    }
+    const props = value?.props as { query?: string } | undefined;
+    const title = value?.title?.trim() || (kind === 'search' && props?.query) || KINDS[kind] || 'Shared link';
+    return { kind: KINDS[kind] ?? 'Shared link', title, detail: `From ${sourceName}.` };
+  }
+
+  const data = location.hash.slice(1);
+  const payload = data ? decode(data) : null;
+  const query = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T>(selector)!;
+
+  if (!payload) {
+    query('[data-invalid]').hidden = false;
+    query('[data-detail]').hidden = true;
+  } else {
+    const { kind, title, detail } = describe(payload);
+    query('[data-kind]').textContent = kind;
+    query('[data-title]').textContent = title;
+    query('[data-detail]').textContent = detail;
+    document.title = `${title} — Suwatte`;
+
+    query<HTMLAnchorElement>('[data-open]').href =
+      `suwatte://source-destination?data=${encodeURIComponent(data)}`;
+    query('[data-actions]').hidden = false;
+
+    if (payload.list) {
+      try {
+        const host = new URL(payload.list).host;
+        const note = query('[data-install]');
+        note.textContent = `Don't have this source? Suwatte offers to install it from ${host} when you open the link.`;
+        note.hidden = false;
+      } catch {
+        // A malformed list address only drops the note; the app rejects the link itself.
+      }
+    }
+  }
+</script>
+
+<style>
+  .open {
+    max-width: 40rem;
+    padding-block: clamp(4rem, 12vh, 8rem) 6rem;
+  }
+
+  .open h1 {
+    margin-block: 0.6rem 1rem;
+    font-size: var(--step-4);
+    letter-spacing: -0.032em;
+    overflow-wrap: anywhere;
+  }
+
+  .open__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .open__actions[hidden] {
+    display: none;
+  }
+
+  .open__note {
+    margin-top: 1.5rem;
+    font-size: var(--step--1);
+    color: var(--text-faint);
+    max-width: 46ch;
+  }
+</style>
