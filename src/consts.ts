@@ -64,9 +64,12 @@ export const USER_DOCS_SIDEBAR: SidebarGroup[] = [
     label: 'Your library',
     entries: [
       { label: 'The library and collections', slug: 'library' },
+      { label: 'Library Labels', slug: 'labels' },
       { label: 'Flags', slug: 'flags' },
       { label: 'Linked Titles', slug: 'linked-titles' },
       { label: 'Local files', slug: 'local-files' },
+      { label: 'Image-Folder Books', slug: 'image-folders' },
+      { label: 'Local Library Metadata', slug: 'local-metadata' },
     ],
   },
   {
@@ -74,8 +77,12 @@ export const USER_DOCS_SIDEBAR: SidebarGroup[] = [
     entries: [
       { label: 'Sources', slug: 'sources' },
       { label: 'Servers', slug: 'servers' },
+      { label: 'Search Filters', slug: 'search' },
+      { label: 'Sharing Source Links', slug: 'sharing' },
       { label: 'Downloads', slug: 'downloads' },
+      { label: 'Automatic Chapter Downloads', slug: 'smart-downloads' },
       { label: 'Updates', slug: 'updates' },
+      { label: 'Smart Updates and Upcoming', slug: 'smart-updates' },
     ],
   },
   {
@@ -83,14 +90,26 @@ export const USER_DOCS_SIDEBAR: SidebarGroup[] = [
     entries: [
       { label: 'Reading Modes', slug: 'reading-modes' },
       { label: 'Reader Settings', slug: 'reader-settings' },
+      { label: 'Reader Presets', slug: 'reader-presets' },
+      { label: 'Page and Tap Controls', slug: 'image-reader-controls' },
+      { label: 'Chapter Filters', slug: 'chapter-filters' },
       { label: 'Novels and PDFs', slug: 'publications' },
+      { label: 'Book Fonts', slug: 'book-fonts' },
       { label: 'Progress and History', slug: 'progress' },
+    ],
+  },
+  {
+    label: 'Appearance and Widgets',
+    entries: [
+      { label: 'Themes and Appearance', slug: 'appearance' },
+      { label: 'Widgets and Daily Goals', slug: 'widgets' },
     ],
   },
   {
     label: 'Your data',
     entries: [
       { label: 'iCloud sync', slug: 'sync' },
+      { label: 'A Device-Only Library', slug: 'device-library' },
       { label: 'Backups', slug: 'backups' },
       { label: 'Insights and streaks', slug: 'insights' },
       { label: 'Privacy controls', slug: 'privacy-controls' },
