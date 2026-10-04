@@ -1,0 +1,2255 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { PRESETS, TOKENS } from '../scripts/theme-builder';
+
+/*
+ * Each preview screen follows the screen in the app. Sources:
+ * Library      iOS/Features/Library/MobileLibraryViewController.swift (inset grouped list)
+ * Activity     iOS/Features/History (Recap, Sessions, Updates, Upcoming)
+ * Home         iOS/Features/Home/AppDefinedFeedViewController.swift (For You feed)
+ * Settings     iOS/Features/Settings/SettingsView.swift
+ * Search       iOS/Features/Sources/GlobalSearch
+ */
+
+const tokenInfo: Record<(typeof TOKENS)[number], { label: string; hint: string }> = {
+  background: { label: 'Background', hint: 'Home, Activity and Search.' },
+  groupedBackground: { label: 'Grouped Background', hint: 'Behind lists: Library, Settings, Upcoming.' },
+  surface: { label: 'Surface', hint: 'List rows, cards and fields.' },
+  text: { label: 'Text', hint: 'Titles and body text.' },
+  secondaryText: { label: 'Secondary Text', hint: 'Subtitles, dates and footers.' },
+  separator: { label: 'Separator', hint: 'Lines between rows.' },
+  accent: { label: 'Accent', hint: 'Icons, the selected tab, chips, rings and switches.' },
+};
+
+const checks = [
+  { id: 'text-bg', label: 'Text on Background' },
+  { id: 'text-surface', label: 'Text on Surface' },
+  { id: 'secondary-bg', label: 'Secondary Text on Background' },
+  { id: 'accent-bg', label: 'Accent on Background' },
+];
+
+// Invented titles. Covers are artwork, so they keep their own colours in every theme.
+const covers = [
+  { title: 'Moonlit Archive', a: '#2E2A5E', b: '#C46A8E' },
+  { title: 'Ash & Ember', a: '#4A1A12', b: '#E39A3B' },
+  { title: 'Paper Lantern', a: '#14343F', b: '#6CB8AE' },
+  { title: 'Starfall Academy', a: '#1A2560', b: '#8EA6F5' },
+  { title: 'Iron Garden', a: '#203018', b: '#A9BE57' },
+  { title: 'Velvet Hour', a: '#3F1A35', b: '#E59AB2' },
+  { title: 'The Quiet Cartographer', a: '#332B20', b: '#CFAF7F' },
+  { title: 'Signal Bloom', a: '#0E2637', b: '#4FA9D3' },
+  { title: 'Kite Season', a: '#4E3110', b: '#E7B84F' },
+];
+const cover = (i: number) => covers[i % covers.length];
+const coverStyle = (i: number) => `--ca:${cover(i).a};--cb:${cover(i).b}`;
+
+// Outline icons for list rows and buttons.
+const line = {
+  menu: '<path d="M5 7.5h14M5 12h14M5 16.5h14"/>',
+  ellipsis: '<circle cx="6" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="18" cy="12" r="1.6" fill="currentColor" stroke="none"/>',
+  chevron: '<path d="m9.5 6 6 6-6 6"/>',
+  chevronDown: '<path d="m6 9.5 6 6 6-6"/>',
+  sidebar: '<rect x="3.5" y="5" width="17" height="14" rx="3.2"/><path d="M9.5 5v14"/>',
+  search: '<circle cx="10.8" cy="10.8" r="6.3"/><path d="m15.6 15.6 4.6 4.6"/>',
+  filter: '<path d="M4.5 7h15M7.5 12h9M10.5 17h3"/>',
+  mic: '<rect x="9.2" y="3.8" width="5.6" height="10" rx="2.8"/><path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v3"/>',
+  phone: '<rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M11 18h2"/>',
+  icloud: '<path d="M7.5 18.5h9.8a3.7 3.7 0 0 0 .5-7.4 5.5 5.5 0 0 0-10.6-1.2A4.3 4.3 0 0 0 7.5 18.5z"/>',
+  server: '<rect x="4" y="4.5" width="16" height="6" rx="1.8"/><rect x="4" y="13.5" width="16" height="6" rx="1.8"/><path d="M7.5 7.5h.01M7.5 16.5h.01"/>',
+  download: '<path d="M12 4v10.5M7.8 10.5 12 14.7l4.2-4.2M5 14.5v3.5a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 18v-3.5"/>',
+  stack: '<rect x="4.5" y="9" width="15" height="10.5" rx="2"/><path d="M6.5 6.5h11M8.5 4h7"/>',
+  books: '<path d="M5 5h3.5v14H5zM10.2 5h3.5v14h-3.5z"/><path d="m15.4 5.9 3.3-.8 2.6 13.4-3.3.8z"/>',
+  bookmark: '<path d="M7 4.5h10v15l-5-3.5-5 3.5z"/>',
+  grid: '<rect x="4.5" y="4.5" width="6" height="6" rx="1.3"/><rect x="13.5" y="4.5" width="6" height="6" rx="1.3"/><rect x="4.5" y="13.5" width="6" height="6" rx="1.3"/><rect x="13.5" y="13.5" width="6" height="6" rx="1.3"/>',
+  chart: '<path d="M4.5 4.5v15h15"/><path d="m7.5 15 3.5-4.5 3 2.5 4.5-6"/>',
+  list: '<rect x="4" y="4.5" width="16" height="15" rx="2.5"/><path d="M8 9h8M8 12h8M8 15h5"/>',
+  palette: '<path d="M12 3.8a8.2 8.2 0 1 0 0 16.4c1.2 0 1.7-.9 1.2-1.9-.6-1.2.2-2.4 1.5-2.4h1.7a3.8 3.8 0 0 0 3.8-3.8c0-4.6-3.7-8.3-8.2-8.3z"/><circle cx="8" cy="11" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.3" cy="8.3" r="1"/>',
+  trend: '<path d="m4.5 16 5-5 3.5 3.5 6.5-6.5"/><path d="M15.5 8h4v4"/>',
+  photo: '<rect x="3.5" y="6" width="13" height="11" rx="2"/><path d="M19.5 9v9.5a1.5 1.5 0 0 1-1.5 1.5H8"/><path d="m5.5 15 3-3 2.5 2.5 1.5-1.5 2 2"/>',
+  book: '<path d="M12 6.5c-1.8-1.3-4.3-2-7.5-2v13c3.2 0 5.7.7 7.5 2 1.8-1.3 4.3-2 7.5-2v-13c-3.2 0-5.7.7-7.5 2zM12 6.5v13"/>',
+  doc: '<path d="M6.5 3.5h7l4 4v13h-11z"/><path d="M13.5 3.5v4h4M9 12h6M9 15.5h6"/>',
+  bell: '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5z"/><path d="M10 20.5h4"/>',
+  clock: '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>',
+  stopwatch: '<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V10M10 3.5h4M17.5 7.5l1.3-1.3"/>',
+  calendar: '<rect x="4" y="5.5" width="16" height="14" rx="2.5"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/>',
+  sparkles: '<path d="M10 4.5 11.4 9l4.6 1.5-4.6 1.4L10 16.5 8.6 11.9 4 10.5 8.6 9z"/><path d="M17 14.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>',
+  globe: '<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.2 2.3 3.2 5 3.2 8s-1 5.7-3.2 8c-2.2-2.3-3.2-5-3.2-8s1-5.7 3.2-8z"/>',
+  flame: '<path d="M12 3.5c.6 3-2 4.6-2 7.5a2 2 0 0 0 4 0c0-1 .4-1.8 1-2.4 1.6 1.5 3 3.5 3 6.1a6 6 0 0 1-12 0c0-4.6 4.4-6.9 6-11.2z"/>',
+  target: '<circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/>',
+};
+const svg = (name: keyof typeof line) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${line[name]}</svg>`;
+
+// Filled tab icons, like the app's `.fill` symbols. Cut-outs use even-odd fills.
+function gearPath(): string {
+  const teeth = 8;
+  const points: string[] = [];
+  for (let i = 0; i < teeth * 4; i++) {
+    const angle = (i / (teeth * 4)) * Math.PI * 2 - Math.PI / 2;
+    const r = i % 4 === 0 || i % 4 === 1 ? 9.6 : 7.4;
+    points.push(`${(12 + r * Math.cos(angle)).toFixed(2)} ${(12 + r * Math.sin(angle)).toFixed(2)}`);
+  }
+  return `M${points.join('L')}Z M12 8.6a3.4 3.4 0 1 0 0 6.8a3.4 3.4 0 1 0 0-6.8Z`;
+}
+const filled = {
+  library: 'M3.5 4h4.2v16H3.5z M9.2 4h4.2v16H9.2z M14.6 5.3l3.9-1 3.6 14.9-3.9 1z',
+  activity: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18Z M11.1 6.6h1.8v4.9l3.4 2.2-1 1.5-4.2-2.7Z',
+  home: 'M12 3.4 2.8 11.2l1.2 1.4 1.4-1.2v8.9h5.1v-5.6h3v5.6h5.1v-8.9l1.4 1.2 1.2-1.4Z',
+  settings: gearPath(),
+};
+const tabIcon = (name: keyof typeof filled) =>
+  `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="${filled[name]}"/></svg>`;
+
+const tabs = [
+  { id: 'library', label: 'Library' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'home', label: 'Home' },
+  { id: 'settings', label: 'Settings' },
+] as const;
+
+const activityModes = [
+  { id: 'recap', label: 'Recap', icon: 'clock' },
+  { id: 'sessions', label: 'Sessions', icon: 'stopwatch' },
+  { id: 'updates', label: 'Updates', icon: 'bell' },
+  { id: 'upcoming', label: 'Upcoming', icon: 'calendar' },
+] as const;
+
+const recap = [
+  { i: 0, detail: 'Chapter 41', source: 'Kitsune Reader', when: '2 hours ago', progress: 0.72 },
+  { i: 1, detail: 'Chapter 112', source: 'Paper Moon', when: 'Yesterday', progress: 0.35 },
+  { i: 2, detail: 'Volume 4', source: 'On My iPhone', when: '3 days ago', progress: 0.9 },
+];
+
+const sessions = [
+  { i: 3, chapter: 'Chapter 7: The Long Night', time: '24 Minutes · 1 Hour Ago', pages: '38 Pages' },
+  { i: 0, chapter: 'Chapter 41: Lanterns', time: '12 Minutes · 3 Hours Ago', pages: '19 Pages' },
+  { i: 5, chapter: 'Chapter 19', time: '5 Minutes · 5 Hours Ago', pages: '7 Pages' },
+];
+
+const updates = [
+  { group: 'Today', rows: [{ i: 1, count: '3 Updates', when: '2 hours ago' }, { i: 7, count: '1 Update', when: '6 hours ago' }] },
+  { group: 'Yesterday', rows: [{ i: 4, count: '2 Updates · Viewed', when: 'Yesterday', viewed: true }] },
+];
+
+// October 2026 starts on a Thursday.
+const monthDays = Array.from({ length: 31 }, (_, d) => d + 1);
+const monthBadges: Record<number, number> = { 3: 2, 5: 1, 8: 3, 12: 1, 15: 2, 19: 1, 22: 4, 26: 1, 29: 2 };
+---
+
+<BaseLayout
+  title="Theme Builder"
+  description="Make a Suwatte theme in your browser. See it on an iPhone or iPad, then open it in the app."
+>
+  <div class="tb shell">
+    <h1 class="visually-hidden">Theme Builder</h1>
+
+    <div class="tb__layout" id="tb-layout" data-device="iphone">
+      <section class="stage" aria-label="Preview">
+        <div class="stage__bar">
+          <div class="seg" role="radiogroup" aria-label="Device">
+            <button type="button" role="radio" aria-checked="true" data-device-option="iphone">iPhone</button>
+            <button type="button" role="radio" aria-checked="false" data-device-option="ipad">iPad</button>
+          </div>
+          <div class="seg" role="radiogroup" aria-label="Appearance" id="tb-appearance" hidden>
+            <button type="button" role="radio" aria-checked="true" data-appearance="light">Light</button>
+            <button type="button" role="radio" aria-checked="false" data-appearance="dark">Dark</button>
+          </div>
+        </div>
+
+        <div class="device" id="tb-device" data-device="iphone" data-tab="library" data-activity="recap" data-glass="dark">
+          <div class="device__frame">
+            <div class="device__screen">
+              <div class="status" aria-hidden="true">
+                <span>9:41</span>
+                <span class="status__icons"><i class="status__signal"></i><i class="status__battery"></i></span>
+              </div>
+
+              <div class="screens">
+                <!-- Library: an inset grouped list of destinations. -->
+                <section class="scr scr--grouped" data-screen="library">
+                  <div class="nav"><span></span><span class="glass glass--circle" set:html={svg('ellipsis')} /></div>
+                  <h2 class="large-title">Library</h2>
+
+                  <h4 class="list-head">Local Library</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('phone')} /><span class="row__title">On My iPhone</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('icloud')} /><span class="row__title">iCloud Drive</span></div>
+                  </div>
+                  <h4 class="list-head">Servers</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('server')} /><span class="row__title">Komga</span></div>
+                  </div>
+                  <h4 class="list-head">Downloads</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('download')} /><span class="row__title">Downloads</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('stack')} /><span class="row__title">Queue</span></div>
+                  </div>
+                  <h4 class="list-head">Source Collections</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('books')} /><span class="row__title">All Titles</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('bookmark')} /><span class="row__title">Saved For Later</span></div>
+                  </div>
+                  <h4 class="list-head">Your Collections</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('grid')} /><span class="row__title">Reading</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('grid')} /><span class="row__title">Weekly</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('grid')} /><span class="row__title">Completed</span></div>
+                  </div>
+                  <h4 class="list-head">Misc</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('bookmark')} /><span class="row__title">Bookmarks</span></div>
+                    <div class="row"><span class="row__icon" set:html={svg('chart')} /><span class="row__title">Insights</span></div>
+                  </div>
+                </section>
+
+                <!-- Activity: palette chips over Recap, Sessions, Updates and Upcoming. -->
+                <section class="scr" data-screen="activity">
+                  <div class="nav"><span></span><span class="glass glass--circle" set:html={svg('ellipsis')} /></div>
+                  <h2 class="large-title">Activity</h2>
+                  <div class="chips">
+                    {activityModes.map((m) => (
+                      <button type="button" class="chip glass" data-activity-target={m.id}>
+                        <span class="chip__icon" set:html={svg(m.icon)} />{m.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div class="activity" data-mode="recap">
+                    {recap.map((r) => (
+                      <div class="history-card">
+                        <div class="cover history-card__cover" style={coverStyle(r.i)}><span class="cover__title">{cover(r.i).title}</span></div>
+                        <div class="history-card__text">
+                          <span class="card-title">{cover(r.i).title}</span>
+                          <span class="card-sub">{r.detail}</span>
+                          <span class="card-meta">{r.source}<br />{r.when}</span>
+                        </div>
+                        <svg class="ring ring--small" viewBox="0 0 40 40" aria-hidden="true" style={`--p:${r.progress}`}>
+                          <circle class="ring__track" cx="20" cy="20" r="16" />
+                          <circle class="ring__fill" cx="20" cy="20" r="16" pathLength="100" />
+                        </svg>
+                      </div>
+                    ))}
+                    <div class="load-more"><span class="glass">Load Full History</span></div>
+                  </div>
+
+                  <div class="activity" data-mode="sessions">
+                    <div class="sessions-head"><span><b>Today</b> · 6 Sessions</span><span class="sessions-head__chev" set:html={svg('chevronDown')} /></div>
+                    {sessions.map((s) => (
+                      <div class="history-card">
+                        <div class="cover history-card__cover" style={coverStyle(s.i)}><span class="cover__title">{cover(s.i).title}</span></div>
+                        <div class="history-card__text">
+                          <span class="card-title">{cover(s.i).title}</span>
+                          <span class="card-sub">{s.chapter}</span>
+                          <span class="card-meta">{s.time}<br />{s.pages}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div class="activity" data-mode="updates">
+                    {updates.map((g) => (
+                      <>
+                        <h4 class="plain-head">{g.group}</h4>
+                        {g.rows.map((u) => (
+                          <div class={u.viewed ? 'update-row is-viewed' : 'update-row'}>
+                            <div class="cover update-row__cover" style={coverStyle(u.i)}><span class="cover__title">{cover(u.i).title}</span></div>
+                            <div class="update-row__text">
+                              <span class="update-row__title">{cover(u.i).title}</span>
+                              <span class="update-row__sub">{u.count}</span>
+                              <span class="update-row__sub update-row__when">{u.when}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    ))}
+                  </div>
+
+                  <div class="activity" data-mode="upcoming">
+                    <div class="card calendar">
+                      <div class="calendar__head"><b>October 2026</b><span class="calendar__nav"><span set:html={svg('chevron')} class="flip" /><span set:html={svg('chevron')} /></span></div>
+                      <div class="calendar__grid">
+                        {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((d) => <span class="calendar__dow">{d}</span>)}
+                        {[0, 1, 2, 3].map(() => <span />)}
+                        {monthDays.map((d) => (
+                          <span class={d === 3 ? 'calendar__day is-today' : 'calendar__day'}>
+                            <span class="calendar__num">{d}</span>
+                            {monthBadges[d] && <span class="calendar__badge">{monthBadges[d]}</span>}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <h4 class="list-head list-head--small">Today, Oct 3</h4>
+                    <div class="card list">
+                      {[6, 2].map((i) => (
+                        <div class="row row--media">
+                          <div class="thumb cover" style={coverStyle(i)} />
+                          <div class="row__stack"><span class="row__title">{cover(i).title}</span><span class="row__sub">Kitsune Reader</span></div>
+                        </div>
+                      ))}
+                    </div>
+                    <p class="list-foot">Estimates are based on past releases and are not guaranteed.</p>
+                    <div class="card list">
+                      <div class="row"><span class="row__title">Due and Overdue</span><span class="row__value">4</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                      <div class="row"><span class="row__title">Not Checked Automatically</span><span class="row__value">11</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Home: the For You feed. -->
+                <section class="scr" data-screen="home">
+                  <div class="nav"><span></span><span class="glass glass--circle" set:html={svg('ellipsis')} /></div>
+                  <h2 class="large-title">Home</h2>
+                  <div class="chips">
+                    <span class="chip glass is-selected"><span class="chip__icon" set:html={svg('sparkles')} />For You</span>
+                    <span class="chip glass"><span class="chip__icon" set:html={svg('globe')} />Sources</span>
+                    <span class="chip glass"><span class="chip__icon" set:html={svg('server')} />Komga</span>
+                  </div>
+
+                  <div class="feed-head"><h3>Continue Reading</h3><span class="feed-head__acc"><span set:html={svg('ellipsis')} /><span set:html={svg('chevron')} /></span></div>
+                  <div class="rail rail--continue">
+                    {[3, 0, 5, 8].map((i, n) => (
+                      <div class="continue cover" style={coverStyle(i)}>
+                        <div class="continue__shade" />
+                        <div class="continue__text">
+                          <span class="card-title">{cover(i).title}</span>
+                          <span class="card-sub">{['Chapter 7', 'Chapter 41', 'Chapter 19', 'Chapter 3'][n]}</span>
+                          <span class="continue__bar"><i style={`width:${[64, 30, 82, 12][n]}%`} /></span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div class="feed-head"><h3>Daily Goal</h3><span class="feed-head__acc"><span set:html={svg('ellipsis')} /></span></div>
+                  <div class="goal">
+                    <span class="goal__ring">
+                      <svg class="ring" viewBox="0 0 48 48" aria-hidden="true" style="--p:0.84">
+                        <circle class="ring__track" cx="24" cy="24" r="21" />
+                        <circle class="ring__fill" cx="24" cy="24" r="21" pathLength="100" />
+                      </svg>
+                      <span class="goal__target" set:html={svg('target')} />
+                    </span>
+                    <span class="goal__text">
+                      <span class="card-title">38 Min of 45 Min</span>
+                      <span class="card-sub">7 min to go today.</span>
+                      <span class="card-sub goal__streak"><span set:html={svg('flame')} />12-Day Streak</span>
+                    </span>
+                    <span class="goal__chev" set:html={svg('chevron')} />
+                  </div>
+
+                  <div class="feed-head"><h3>Recent Updates</h3><span class="feed-head__acc"><span set:html={svg('ellipsis')} /><span set:html={svg('chevron')} /></span></div>
+                  <div class="rail">
+                    {[1, 7, 4, 2, 6].map((i) => (
+                      <div class="tile">
+                        <div class="cover" style={coverStyle(i)}><span class="cover__title">{cover(i).title}</span></div>
+                        <span class="tile__title">{cover(i).title}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div class="feed-head"><h3>Saved For Later</h3><span class="feed-head__acc"><span set:html={svg('ellipsis')} /><span set:html={svg('chevron')} /></span></div>
+                  <div class="rail">
+                    {[5, 8, 0, 3].map((i) => (
+                      <div class="tile">
+                        <div class="cover" style={coverStyle(i)}><span class="cover__title">{cover(i).title}</span></div>
+                        <span class="tile__title">{cover(i).title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <!-- Settings -->
+                <section class="scr scr--grouped" data-screen="settings">
+                  <div class="nav"><span></span><span></span></div>
+                  <h2 class="large-title">Settings</h2>
+                  <h4 class="list-head list-head--small">Content Settings</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__title">Safe Mode</span><span class="switch is-on"><i /></span></div>
+                    <div class="row"><span class="row__title">Incognito Mode</span><span class="switch"><i /></span></div>
+                  </div>
+                  <p class="list-foot">Safe Mode filters mature content. Incognito Mode stops saving reading progress.</p>
+                  <h4 class="list-head list-head--small">Notifications</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__title">Reading Reminders</span><span class="switch is-on"><i /></span></div>
+                  </div>
+                  <h4 class="list-head list-head--small">Reading</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('list')} /><span class="row__title">Global Chapter Settings</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('palette')} /><span class="row__title">Library & Appearance</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('trend')} /><span class="row__title">Startup & Activity</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                  </div>
+                  <h4 class="list-head list-head--small">Reader</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('photo')} /><span class="row__title">Image Reader</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('book')} /><span class="row__title">Book Reader</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('doc')} /><span class="row__title">PDF Reader</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                  </div>
+                  <h4 class="list-head list-head--small">Library</h4>
+                  <div class="card list">
+                    <div class="row"><span class="row__icon" set:html={svg('books')} /><span class="row__title">Local Libraries</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('grid')} /><span class="row__title">Source Collections</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                    <div class="row"><span class="row__icon" set:html={svg('server')} /><span class="row__title">Servers</span><span class="row__chev" set:html={svg('chevron')} /></div>
+                  </div>
+                </section>
+
+                <!-- Search: results grouped by where they came from. -->
+                <section class="scr" data-screen="search">
+                  <div class="nav"><span></span><span class="glass glass--circle" set:html={svg('filter')} /></div>
+                  <h2 class="large-title">Search</h2>
+                  <div class="field field--top"><span set:html={svg('search')} /><span class="field__query">moon</span></div>
+                  {[
+                    { name: 'Local Library', count: '2 Results', items: [0, 2] },
+                    { name: 'Kitsune Reader', count: '48 Results', items: [0, 3, 5, 7, 1] },
+                    { name: 'Komga', count: '3 Results', items: [6, 0, 4] },
+                  ].map((g) => (
+                    <>
+                      <div class="feed-head">
+                        <div><h3>{g.name}</h3><small>{g.count}</small></div>
+                        <span class="feed-head__acc"><span set:html={svg('chevron')} /></span>
+                      </div>
+                      <div class="rail">
+                        {g.items.map((i) => (
+                          <div class="tile">
+                            <div class="cover" style={coverStyle(i)}><span class="cover__title">{cover(i).title}</span></div>
+                            <span class="tile__title">{cover(i).title}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ))}
+                </section>
+              </div>
+
+              <!-- Tab bar: floating at the bottom on iPhone, at the top centre on iPad. -->
+              <nav class="tabbar" aria-label="Preview tabs">
+                <span class="glass glass--circle tabbar__sidebar" set:html={svg('sidebar')} />
+                <div class="glass tabbar__tabs">
+                  {tabs.map((t) => (
+                    <button type="button" class="tab" data-tab-target={t.id} aria-label={t.label}>
+                      <span class="tab__icon" set:html={tabIcon(t.id)} />
+                      <span class="tab__label">{t.label}</span>
+                    </button>
+                  ))}
+                  <button type="button" class="tab tab--search-inline" data-tab-target="search" aria-label="Search">
+                    <span class="tab__icon" set:html={svg('search')} />
+                  </button>
+                </div>
+                <button type="button" class="glass glass--circle tabbar__search" data-tab-target="search" aria-label="Search" set:html={svg('search')} />
+              </nav>
+
+              <!-- iPhone search: the tab bar folds into one button and the field moves to the bottom. -->
+              <div class="searchbar">
+                <button type="button" class="glass glass--circle searchbar__back" data-tab-target="back" aria-label="Back to tabs" set:html={tabIcon('home')} />
+                <div class="glass searchbar__field">
+                  <span set:html={svg('search')} /><span class="searchbar__query">moon</span><span set:html={svg('mic')} />
+                </div>
+              </div>
+
+              <div class="home-indicator" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+        <p class="stage__note">iOS draws the Liquid Glass bars and buttons. The Background color makes the glass light or dark.</p>
+      </section>
+
+      <section class="panel" aria-label="Theme colors">
+        <div class="panel__row">
+          <div class="panel__group panel__group--grow">
+            <label class="label" for="tb-name">Name</label>
+            <input class="input" id="tb-name" type="text" maxlength="40" value="My Theme" autocomplete="off" />
+          </div>
+          <details class="presets" id="tb-presets">
+            <summary class="presets__button">
+              Presets <span class="presets__chev" set:html={svg('chevronDown')} />
+            </summary>
+            <div class="presets__menu">
+              {['Suwatte', 'Catppuccin'].map((family) => (
+                <>
+                  <span class="presets__family">{family}</span>
+                  <div class="presets__grid">
+                    {PRESETS.filter((p) => p.family === family).map((p) => (
+                      <button type="button" class="preset" data-preset={p.id}>
+                        <span class="preset__swatch" style={`--a:${p.light.background};--b:${p.light.surface};--c:${p.light.accent};--d:${(p.dark ?? p.light).background};--e:${p.dark ? p.dark.accent : "transparent"}`} />
+                        <span class="preset__name">{p.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ))}
+            </div>
+          </details>
+        </div>
+
+        <label class="switch-row">
+          <input type="checkbox" id="tb-dynamic" />
+          <span>
+            <b>Adapt to Light and Dark</b>
+            <small>The theme follows the device's Light or Dark setting, with separate colors for each.</small>
+          </span>
+        </label>
+
+        <div class="panel__group">
+          <span class="label" id="tb-colors-label">Colors</span>
+          <div class="colors">
+            {TOKENS.map((token) => (
+              <div class="color" data-token={token}>
+                <input class="color__picker" type="color" id={`tb-${token}`} aria-label={`${tokenInfo[token].label} color`} />
+                <label class="color__text" for={`tb-${token}`}>
+                  <b>{tokenInfo[token].label}</b>
+                  <small>{tokenInfo[token].hint}</small>
+                </label>
+                <input class="input input--hex" type="text" spellcheck="false" maxlength="7" aria-label={`${tokenInfo[token].label} hex value`} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="panel__group">
+          <span class="label">Contrast</span>
+          <ul class="checks">
+            {checks.map((c) => (
+              <li data-check={c.id}><span>{c.label}</span><span class="checks__value" /></li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="panel__actions">
+          <button type="button" class="btn" id="tb-download">Download Theme</button>
+          <label class="btn btn--ghost">
+            Import
+            <input type="file" id="tb-import" accept=".stt_theme,application/json" hidden />
+          </label>
+          <button type="button" class="btn btn--ghost" id="tb-copy">Copy Link</button>
+        </div>
+        <p class="panel__status" id="tb-status" role="status" aria-live="polite"></p>
+        <p class="panel__note">Open the downloaded <code>.stt_theme</code> file on your iPhone or iPad to add it to Suwatte.</p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    PRESETS,
+    TOKENS,
+    contrast,
+    decodeTheme,
+    encodeTheme,
+    fileName,
+    isDark,
+    normalizeHex,
+    textOnAccent,
+    themeFromHash,
+    themeToHash,
+    type Palette,
+    type Theme,
+  } from '../scripts/theme-builder';
+
+  const $ = <T extends Element>(selector: string, root: ParentNode = document) => root.querySelector<T>(selector)!;
+  const $$ = <T extends Element>(selector: string, root: ParentNode = document) => [...root.querySelectorAll<T>(selector)];
+
+  const device = $<HTMLElement>('#tb-device');
+  const nameInput = $<HTMLInputElement>('#tb-name');
+  const dynamicInput = $<HTMLInputElement>('#tb-dynamic');
+  const appearanceSeg = $<HTMLElement>('#tb-appearance');
+  const presetsMenu = $<HTMLDetailsElement>('#tb-presets');
+  const status = $<HTMLElement>('#tb-status');
+
+  let theme: Theme = themeFromHash(location.hash) ?? { name: 'My Theme', light: { ...PRESETS[0].light }, dark: null };
+  let editingDark = false;
+  let lastTab = 'library';
+
+  const current = (): Palette => (editingDark && theme.dark ? theme.dark : theme.light);
+
+  function setRadio(group: ParentNode, attr: string, value: string) {
+    $$<HTMLButtonElement>(`[${attr}]`, group).forEach((b) => b.setAttribute('aria-checked', String(b.getAttribute(attr) === value)));
+  }
+
+  function renderPreview() {
+    const p = current();
+    const vars: Record<string, string> = {
+      '--t-bg': p.background,
+      '--t-grouped': p.groupedBackground,
+      '--t-surface': p.surface,
+      '--t-text': p.text,
+      '--t-text2': p.secondaryText,
+      '--t-sep': p.separator,
+      '--t-accent': p.accent,
+      '--t-on-accent': textOnAccent(p.accent),
+    };
+    Object.entries(vars).forEach(([k, v]) => device.style.setProperty(k, v));
+    device.dataset.glass = isDark(p) ? 'dark' : 'light';
+  }
+
+  function renderControls() {
+    const p = current();
+    nameInput.value = theme.name;
+    dynamicInput.checked = theme.dark !== null;
+    appearanceSeg.hidden = theme.dark === null;
+    setRadio(appearanceSeg, 'data-appearance', editingDark ? 'dark' : 'light');
+    $('#tb-colors-label').textContent = theme.dark ? (editingDark ? 'Dark Colors' : 'Light Colors') : 'Colors';
+    for (const token of TOKENS) {
+      const row = $<HTMLElement>(`[data-token="${token}"]`);
+      $<HTMLInputElement>('.color__picker', row).value = p[token].toLowerCase();
+      const hex = $<HTMLInputElement>('.input--hex', row);
+      if (document.activeElement !== hex) hex.value = p[token];
+      hex.classList.remove('is-invalid');
+    }
+    renderChecks(p);
+  }
+
+  function renderChecks(p: Palette) {
+    const rows: Record<string, [string, string, number]> = {
+      'text-bg': [p.text, p.background, 4.5],
+      'text-surface': [p.text, p.surface, 4.5],
+      'secondary-bg': [p.secondaryText, p.background, 4.5],
+      'accent-bg': [p.accent, p.background, 3],
+    };
+    for (const [id, [a, b, min]] of Object.entries(rows)) {
+      const ratio = contrast(a, b);
+      const el = $<HTMLElement>(`[data-check="${id}"] .checks__value`);
+      el.textContent = `${ratio.toFixed(1)}:1 · ${ratio >= min ? 'Good' : 'Low'}`;
+      el.dataset.state = ratio >= min ? 'good' : 'low';
+    }
+  }
+
+  let hashTimer: number | undefined;
+  function persist() {
+    window.clearTimeout(hashTimer);
+    hashTimer = window.setTimeout(() => history.replaceState(null, '', `#theme=${themeToHash(theme)}`), 250);
+  }
+
+  function update() {
+    renderControls();
+    renderPreview();
+    persist();
+  }
+
+  function setColor(token: (typeof TOKENS)[number], hex: string) {
+    current()[token] = hex;
+    renderPreview();
+    renderChecks(current());
+    persist();
+  }
+
+  for (const token of TOKENS) {
+    const row = $<HTMLElement>(`[data-token="${token}"]`);
+    const picker = $<HTMLInputElement>('.color__picker', row);
+    const hex = $<HTMLInputElement>('.input--hex', row);
+    picker.addEventListener('input', () => {
+      const value = normalizeHex(picker.value)!;
+      hex.value = value;
+      hex.classList.remove('is-invalid');
+      setColor(token, value);
+    });
+    hex.addEventListener('input', () => {
+      const value = normalizeHex(hex.value);
+      hex.classList.toggle('is-invalid', !value);
+      if (!value) return;
+      picker.value = value.toLowerCase();
+      setColor(token, value);
+    });
+    hex.addEventListener('blur', () => {
+      hex.value = current()[token];
+      hex.classList.remove('is-invalid');
+    });
+  }
+
+  nameInput.addEventListener('input', () => {
+    theme.name = nameInput.value;
+    persist();
+  });
+
+  dynamicInput.addEventListener('change', () => {
+    if (dynamicInput.checked) {
+      // Same as the app: the edited colours become Light or Dark by their background.
+      const dark = isDark(theme.light);
+      const copy = { ...theme.light };
+      theme.dark = dark ? { ...theme.light } : copy;
+      theme.light = dark ? copy : theme.light;
+      editingDark = dark;
+    } else {
+      theme.light = { ...current() };
+      theme.dark = null;
+      editingDark = false;
+    }
+    update();
+  });
+
+  $$<HTMLButtonElement>('[data-appearance]').forEach((b) =>
+    b.addEventListener('click', () => {
+      editingDark = b.dataset.appearance === 'dark';
+      update();
+    }),
+  );
+
+  // Presets dropdown
+  $$<HTMLButtonElement>('[data-preset]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const preset = PRESETS.find((p) => p.id === b.dataset.preset)!;
+      theme = { name: theme.name, light: { ...preset.light }, dark: preset.dark ? { ...preset.dark } : null };
+      editingDark = false;
+      presetsMenu.open = false;
+      update();
+      flash(`Applied ${preset.name}.`);
+    }),
+  );
+  document.addEventListener('click', (event) => {
+    if (presetsMenu.open && !presetsMenu.contains(event.target as Node)) presetsMenu.open = false;
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && presetsMenu.open) presetsMenu.open = false;
+  });
+
+  // Device, tabs and Activity chips
+  $$<HTMLButtonElement>('[data-device-option]').forEach((b) =>
+    b.addEventListener('click', () => {
+      device.dataset.device = b.dataset.deviceOption!;
+      $<HTMLElement>('#tb-layout').dataset.device = b.dataset.deviceOption!;
+      setRadio(b.parentElement!, 'data-device-option', b.dataset.deviceOption!);
+    }),
+  );
+
+  function selectTab(tab: string) {
+    if (tab === 'back') tab = lastTab;
+    if (tab !== 'search') lastTab = tab;
+    device.dataset.tab = tab;
+    $$<HTMLButtonElement>('[data-tab-target]', device).forEach((b) => b.classList.toggle('is-selected', b.dataset.tabTarget === tab));
+    const back = $<HTMLElement>('.searchbar__back', device);
+    back.innerHTML = $(`.tab[data-tab-target="${lastTab}"] .tab__icon`, device).innerHTML;
+  }
+  $$<HTMLButtonElement>('[data-tab-target]', device).forEach((b) => b.addEventListener('click', () => selectTab(b.dataset.tabTarget!)));
+
+  function selectActivity(mode: string) {
+    device.dataset.activity = mode;
+    $$<HTMLButtonElement>('[data-activity-target]', device).forEach((b) => b.classList.toggle('is-selected', b.dataset.activityTarget === mode));
+  }
+  $$<HTMLButtonElement>('[data-activity-target]', device).forEach((b) => b.addEventListener('click', () => selectActivity(b.dataset.activityTarget!)));
+
+  // File actions
+  function flash(message: string) {
+    status.textContent = message;
+    window.setTimeout(() => {
+      if (status.textContent === message) status.textContent = '';
+    }, 3500);
+  }
+
+  $('#tb-download').addEventListener('click', () => {
+    const blob = new Blob([encodeTheme(theme)], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName(theme.name);
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
+
+  $<HTMLInputElement>('#tb-import').addEventListener('change', async (event) => {
+    const input = event.currentTarget as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    try {
+      theme = decodeTheme(await file.text());
+      editingDark = false;
+      update();
+      flash(`Imported “${theme.name}”.`);
+    } catch (error) {
+      flash(error instanceof Error ? error.message : 'Cannot read this file.');
+    }
+  });
+
+  $('#tb-copy').addEventListener('click', async () => {
+    const url = `${location.origin}${location.pathname}#theme=${themeToHash(theme)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      flash('Link copied.');
+    } catch {
+      history.replaceState(null, '', url);
+      flash('Copy the link from the address bar.');
+    }
+  });
+
+  selectTab('library');
+  selectActivity('recap');
+  update();
+</script>
+
+<style>
+  /* ---------------------------------------------------------------- page */
+
+  .tb {
+    padding-block: 2.5rem 4.5rem;
+  }
+
+  /* The preview and the colours sit side by side as one centred group. The
+     iPhone column fits the phone; the iPad column takes the free width. */
+  .tb__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 24rem) minmax(20rem, 25rem);
+    justify-content: center;
+    gap: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
+    align-items: start;
+  }
+
+  .tb__layout[data-device='ipad'] {
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 25rem);
+  }
+
+  .stage {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+  }
+
+  .panel {
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100dvh - 6.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  @media (max-width: 56rem) {
+    .tb__layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panel {
+      position: static;
+      max-height: none;
+    }
+  }
+
+  .stage__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+  }
+
+  .stage__note {
+    max-width: 40rem;
+    margin: 0;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-faint);
+  }
+
+  .seg {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+  }
+
+  .seg[hidden] {
+    display: none;
+  }
+
+  .seg button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.42rem 1rem;
+    background: transparent;
+    color: var(--text-muted);
+    font: 600 0.88rem/1 var(--font-ui);
+    cursor: pointer;
+  }
+
+  .seg button[aria-checked='true'] {
+    background: var(--bg-raised);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* --------------------------------------------------------------- panel */
+
+  .panel {
+    display: grid;
+    gap: 1.4rem;
+    padding: 1.3rem;
+    border-radius: var(--radius-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    font-family: var(--font-ui);
+  }
+
+  .panel__row {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-end;
+  }
+
+  .panel__group {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .panel__group--grow {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .input {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--text);
+    font: 500 0.95rem/1.2 var(--font-ui);
+  }
+
+  .input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .input--hex {
+    width: 6.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+  }
+
+  .input--hex.is-invalid {
+    border-color: #d64545;
+    outline-color: #d64545;
+  }
+
+  /* Presets dropdown */
+  .presets {
+    position: relative;
+  }
+
+  .presets__button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    height: 2.55rem;
+    padding: 0 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--bg);
+    color: var(--text);
+    font: 600 0.92rem/1 var(--font-ui);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+
+  .presets__button::-webkit-details-marker {
+    display: none;
+  }
+
+  .presets__button:hover,
+  .presets[open] .presets__button {
+    border-color: var(--accent);
+  }
+
+  .presets__chev {
+    width: 0.95rem;
+    height: 0.95rem;
+    transition: transform 0.2s ease;
+  }
+
+  .presets[open] .presets__chev {
+    transform: rotate(180deg);
+  }
+
+  .presets__menu {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    width: min(19rem, 80vw);
+    padding: 0.9rem 0.9rem 0.5rem;
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    box-shadow: var(--shadow);
+  }
+
+  .presets__family {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .presets__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.2rem 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .preset {
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0 0.4rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font: 600 0.75rem/1.2 var(--font-ui);
+    cursor: pointer;
+  }
+
+  .preset:hover .preset__swatch,
+  .preset:focus-visible .preset__swatch {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+
+  .preset:hover .preset__name {
+    color: var(--text);
+  }
+
+  .preset__swatch {
+    position: relative;
+    width: 3.4rem;
+    height: 2.2rem;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--a) 50%, var(--d) 50%);
+    box-shadow: 0 0 0 1px rgba(127, 127, 127, 0.28);
+    overflow: hidden;
+    transition: transform 0.15s var(--ease-spring), box-shadow 0.15s ease;
+  }
+
+  .preset__swatch::before,
+  .preset__swatch::after {
+    content: '';
+    position: absolute;
+    border-radius: 999px;
+  }
+
+  .preset__swatch::before {
+    left: 0.45rem;
+    right: 0.45rem;
+    bottom: 0.4rem;
+    height: 0.38rem;
+    background: var(--b);
+  }
+
+  .preset__swatch::after {
+    top: 0.4rem;
+    left: 0.45rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--c);
+    box-shadow: 1.95rem 0 0 var(--e);
+  }
+
+  .switch-row {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    cursor: pointer;
+  }
+
+  .switch-row input {
+    margin-top: 0.2rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--accent);
+  }
+
+  .switch-row b {
+    display: block;
+    font-size: 0.95rem;
+  }
+
+  .switch-row small,
+  .color__text small {
+    display: block;
+    color: var(--text-faint);
+    font-size: 0.8rem;
+    line-height: 1.35;
+  }
+
+  .colors {
+    display: grid;
+  }
+
+  .color {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-block-end: 1px solid var(--border);
+  }
+
+  .color:last-child {
+    border-block-end: 0;
+  }
+
+  .color__picker {
+    width: 2.3rem;
+    height: 2.3rem;
+    padding: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .color__picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  .color__picker::-webkit-color-swatch {
+    border: 0;
+    border-radius: 9px;
+  }
+
+  .color__picker::-moz-color-swatch {
+    border: 0;
+    border-radius: 9px;
+  }
+
+  .color__text {
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  .color__text b {
+    display: block;
+    font-size: 0.92rem;
+  }
+
+  .checks {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+    font-size: 0.86rem;
+  }
+
+  .checks li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    color: var(--text-muted);
+  }
+
+  .checks__value {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .checks__value[data-state='good'] {
+    color: #2f9e61;
+  }
+
+  .checks__value[data-state='low'] {
+    color: #d9822b;
+  }
+
+  .panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .panel__actions .btn {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.05rem;
+  }
+
+  .panel__status {
+    margin: -0.8rem 0 0;
+    min-height: 1.2em;
+    font-size: 0.85rem;
+    color: var(--accent);
+  }
+
+  .panel__note {
+    margin: 0;
+    font-family: var(--font-prose);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+  }
+
+  /* -------------------------------------------------------------- device */
+
+  /*
+   * The screen is laid out in iOS points: --u is one point at the current
+   * size, so the preview scales with the page without a transform.
+   */
+  .device {
+    container-type: inline-size;
+    width: min(100%, 370px);
+    --t-bg: #1b1a28;
+    --t-grouped: #16151f;
+    --t-surface: #26243a;
+    --t-text: #ede9f7;
+    --t-text2: #a6a0bd;
+    --t-sep: #3b3854;
+    --t-accent: #c4a6f2;
+    --t-on-accent: #000;
+  }
+
+  .device[data-device='ipad'] {
+    width: 100%;
+  }
+
+  .device__frame {
+    --u: calc(100cqw / 417);
+    padding: calc(12 * var(--u));
+    border-radius: calc(64 * var(--u));
+    background: linear-gradient(145deg, #2a2a2e, #0e0e10);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+      0 30px 60px -20px rgba(0, 0, 0, 0.45),
+      0 10px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .device[data-device='ipad'] .device__frame {
+    --u: calc(100cqw / 1216);
+    padding: calc(18 * var(--u));
+    border-radius: calc(44 * var(--u));
+  }
+
+  .device__screen {
+    position: relative;
+    aspect-ratio: 393 / 852;
+    overflow: hidden;
+    border-radius: calc(52 * var(--u));
+    background: var(--t-bg);
+    color: var(--t-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
+    font-size: calc(17 * var(--u));
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .device[data-device='ipad'] .device__screen {
+    aspect-ratio: 1180 / 820;
+    border-radius: calc(26 * var(--u));
+  }
+
+  /* Screens built on grouped lists show the grouped background. */
+  .device:is([data-tab='library'], [data-tab='settings']) .device__screen,
+  .device[data-tab='activity'][data-activity='upcoming'] .device__screen {
+    background: var(--t-grouped);
+  }
+
+  .device :global(:is(span, button) > svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .status {
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: calc(54 * var(--u));
+    padding: calc(6 * var(--u)) calc(34 * var(--u)) 0 calc(44 * var(--u));
+    font-weight: 600;
+    font-size: calc(16 * var(--u));
+    color: var(--chrome);
+    pointer-events: none;
+  }
+
+  .device[data-device='ipad'] .status {
+    height: calc(30 * var(--u));
+    padding: 0 calc(22 * var(--u));
+    font-size: calc(13 * var(--u));
+  }
+
+  .status__icons {
+    display: flex;
+    gap: calc(6 * var(--u));
+    align-items: center;
+  }
+
+  .status__signal {
+    width: calc(17 * var(--u));
+    height: calc(11 * var(--u));
+    background: linear-gradient(to right, currentColor 0 22%, transparent 22% 26%, currentColor 26% 48%, transparent 48% 52%, currentColor 52% 74%, transparent 74% 78%, currentColor 78%);
+    clip-path: polygon(0 100%, 100% 0, 100% 100%);
+  }
+
+  .status__battery {
+    width: calc(25 * var(--u));
+    height: calc(12 * var(--u));
+    border-radius: calc(4 * var(--u));
+    border: calc(1.2 * var(--u)) solid color-mix(in srgb, currentColor 45%, transparent);
+    background: linear-gradient(currentColor, currentColor) calc(1.5 * var(--u)) 50% / 72% 70% no-repeat;
+  }
+
+  .home-indicator {
+    position: absolute;
+    left: 50%;
+    bottom: calc(8 * var(--u));
+    z-index: 6;
+    width: calc(140 * var(--u));
+    height: calc(5 * var(--u));
+    border-radius: 99px;
+    background: var(--chrome);
+    transform: translateX(-50%);
+  }
+
+  .device[data-device='ipad'] .home-indicator {
+    width: calc(320 * var(--u));
+    bottom: calc(7 * var(--u));
+  }
+
+  .device[data-glass='light'] {
+    --chrome: #000;
+    --glass-fill: rgba(255, 255, 255, 0.55);
+    --glass-edge: rgba(255, 255, 255, 0.75);
+    --glass-hi: rgba(255, 255, 255, 0.95);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --glass-select: rgba(0, 0, 0, 0.07);
+  }
+
+  .device[data-glass='dark'] {
+    --chrome: #fff;
+    --glass-fill: rgba(40, 40, 44, 0.45);
+    --glass-edge: rgba(255, 255, 255, 0.16);
+    --glass-hi: rgba(255, 255, 255, 0.14);
+    --glass-shadow: rgba(0, 0, 0, 0.45);
+    --glass-select: rgba(255, 255, 255, 0.12);
+  }
+
+  /* Liquid Glass: drawn by iOS from what is behind it, not from the theme. */
+  .glass {
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(calc(14 * var(--u))) saturate(1.8);
+    backdrop-filter: blur(calc(14 * var(--u))) saturate(1.8);
+    border: calc(0.6 * var(--u)) solid var(--glass-edge);
+    box-shadow:
+      0 calc(6 * var(--u)) calc(20 * var(--u)) var(--glass-shadow),
+      inset 0 calc(1 * var(--u)) 0 var(--glass-hi);
+    color: var(--t-text);
+  }
+
+  .glass--circle {
+    display: grid;
+    place-items: center;
+    width: calc(44 * var(--u));
+    height: calc(44 * var(--u));
+    padding: calc(11 * var(--u));
+    border-radius: 999px;
+  }
+
+  /* -------------------------------------------------------------- screens */
+
+  .screens {
+    position: absolute;
+    inset: 0;
+  }
+
+  .scr {
+    position: absolute;
+    inset: 0;
+    display: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    padding: calc(54 * var(--u)) calc(16 * var(--u)) calc(120 * var(--u));
+  }
+
+  .scr::-webkit-scrollbar {
+    display: none;
+  }
+
+  .device[data-tab='library'] [data-screen='library'],
+  .device[data-tab='activity'] [data-screen='activity'],
+  .device[data-tab='home'] [data-screen='home'],
+  .device[data-tab='settings'] [data-screen='settings'],
+  .device[data-tab='search'] [data-screen='search'] {
+    display: block;
+  }
+
+  .device[data-device='ipad'] .scr {
+    padding: calc(92 * var(--u)) calc(40 * var(--u)) calc(40 * var(--u));
+  }
+
+  /* On iPad, lists and the Activity feed keep a readable width. */
+  .device[data-device='ipad'] :is(.scr--grouped, [data-screen='activity']) > :not(.nav) {
+    max-width: calc(700 * var(--u));
+    margin-inline: auto;
+  }
+
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: calc(44 * var(--u));
+    margin-block: calc(2 * var(--u)) calc(6 * var(--u));
+  }
+
+  .device[data-device='ipad'] .nav {
+    position: absolute;
+    top: calc(36 * var(--u));
+    right: calc(22 * var(--u));
+    margin: 0;
+  }
+
+  .device[data-device='ipad'] .nav > :first-child {
+    display: none;
+  }
+
+  .large-title {
+    margin: 0 0 calc(12 * var(--u));
+    font-family: inherit;
+    font-size: calc(34 * var(--u));
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--t-text);
+  }
+
+  .card {
+    background: var(--t-surface);
+    border-radius: calc(26 * var(--u));
+  }
+
+  .list {
+    overflow: hidden;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+    min-height: calc(52 * var(--u));
+    padding: calc(8 * var(--u)) calc(18 * var(--u));
+    position: relative;
+  }
+
+  .row + .row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: calc(18 * var(--u));
+    border-top: calc(0.6 * var(--u)) solid var(--t-sep);
+  }
+
+  .row:has(.row__icon) + .row::before {
+    left: calc(58 * var(--u));
+  }
+
+  .row--media + .row--media::before {
+    left: calc(74 * var(--u));
+  }
+
+  .row__icon {
+    flex: none;
+    width: calc(26 * var(--u));
+    height: calc(26 * var(--u));
+    color: var(--t-accent);
+  }
+
+  .row__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--t-text);
+  }
+
+  .row__value {
+    color: var(--t-text2);
+  }
+
+  .row__chev {
+    flex: none;
+    width: calc(14 * var(--u));
+    height: calc(14 * var(--u));
+    color: color-mix(in srgb, var(--t-text2) 60%, transparent);
+  }
+
+  .row__stack {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: calc(2 * var(--u));
+  }
+
+  .row__sub {
+    font-size: calc(14 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .thumb {
+    flex: none;
+    width: calc(40 * var(--u));
+    aspect-ratio: 2 / 3;
+    border-radius: calc(5 * var(--u));
+  }
+
+  .thumb .cover__title {
+    display: none;
+  }
+
+  /* Inset grouped section headers: Library uses headline text, Settings small grey. */
+  .list-head {
+    margin: calc(20 * var(--u)) calc(18 * var(--u)) calc(8 * var(--u));
+    font-family: inherit;
+    font-size: calc(17 * var(--u));
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--t-text);
+  }
+
+  .list-head--small {
+    font-size: calc(15 * var(--u));
+    font-weight: 500;
+    color: var(--t-text2);
+  }
+
+  .list-foot {
+    margin: calc(8 * var(--u)) calc(18 * var(--u)) calc(4 * var(--u));
+    font-size: calc(13 * var(--u));
+    line-height: 1.35;
+    color: var(--t-text2);
+  }
+
+  .plain-head {
+    margin: calc(18 * var(--u)) calc(2 * var(--u)) calc(10 * var(--u));
+    font-family: inherit;
+    font-size: calc(17 * var(--u));
+    font-weight: 600;
+    color: var(--t-text);
+  }
+
+  /* Covers: artwork stand-ins. */
+  .cover {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: calc(8 * var(--u));
+    background: linear-gradient(165deg, var(--ca) 15%, var(--cb) 115%);
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: calc(8 * var(--u)) calc(8 * var(--u)) auto;
+    height: calc(1.2 * var(--u));
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .cover__title {
+    position: absolute;
+    inset: calc(14 * var(--u)) calc(8 * var(--u)) auto;
+    font-family: var(--font-prose);
+    font-size: calc(12 * var(--u));
+    font-weight: 600;
+    line-height: 1.1;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  /* Palette chips (Activity and Home): glass capsules; the selected one is
+     glass tinted with the accent. */
+  .chips {
+    display: flex;
+    gap: calc(5 * var(--u));
+    margin: 0 calc(-16 * var(--u)) calc(14 * var(--u));
+    padding: calc(4 * var(--u)) calc(16 * var(--u));
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: calc(3.5 * var(--u));
+    padding: calc(9.5 * var(--u)) calc(14 * var(--u));
+    border-radius: 999px;
+    font: inherit;
+    font-size: calc(13 * var(--u));
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .chip__icon {
+    width: calc(15 * var(--u));
+    height: calc(15 * var(--u));
+  }
+
+  .chip.is-selected {
+    background: color-mix(in srgb, var(--t-accent) 92%, transparent);
+    color: var(--t-on-accent);
+    border-color: color-mix(in srgb, var(--t-accent) 60%, white);
+  }
+
+  /* Activity */
+  .activity {
+    display: none;
+  }
+
+  .device[data-activity='recap'] [data-mode='recap'],
+  .device[data-activity='sessions'] [data-mode='sessions'],
+  .device[data-activity='updates'] [data-mode='updates'],
+  .device[data-activity='upcoming'] [data-mode='upcoming'] {
+    display: block;
+  }
+
+  .history-card {
+    display: flex;
+    align-items: center;
+    gap: calc(10 * var(--u));
+    height: calc(144 * var(--u));
+    margin-bottom: calc(10 * var(--u));
+    padding: calc(12 * var(--u));
+    border-radius: calc(10 * var(--u));
+    background: color-mix(in srgb, var(--t-text) 5%, transparent);
+  }
+
+  .history-card__cover {
+    flex: none;
+    align-self: flex-start;
+    width: calc(80 * var(--u));
+    height: calc(120 * var(--u));
+    border-radius: calc(5 * var(--u));
+    box-shadow: 0 0 calc(3 * var(--u)) rgba(0, 0, 0, 0.3);
+  }
+
+  .history-card__cover .cover__title {
+    font-size: calc(10 * var(--u));
+  }
+
+  .history-card__text {
+    flex: 1;
+    min-width: 0;
+    align-self: flex-start;
+    display: grid;
+    gap: calc(4 * var(--u));
+  }
+
+  .card-title {
+    font-size: calc(14 * var(--u));
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--t-text);
+  }
+
+  .card-sub {
+    font-size: calc(12 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .card-meta {
+    font-size: calc(12 * var(--u));
+    line-height: 1.35;
+    color: color-mix(in srgb, var(--t-text2) 80%, transparent);
+  }
+
+  .ring {
+    transform: rotate(-90deg);
+  }
+
+  .ring circle {
+    fill: none;
+    stroke-linecap: round;
+  }
+
+  .ring__track {
+    stroke: color-mix(in srgb, var(--t-accent) 20%, transparent);
+  }
+
+  .ring__fill {
+    stroke: var(--t-accent);
+    stroke-dasharray: calc(var(--p) * 100) 100;
+  }
+
+  .ring--small {
+    flex: none;
+    width: calc(35 * var(--u));
+    height: calc(35 * var(--u));
+  }
+
+  .ring--small circle {
+    stroke-width: 4.5;
+  }
+
+  .load-more {
+    display: grid;
+    place-items: center;
+    height: calc(100 * var(--u));
+  }
+
+  .load-more span {
+    padding: calc(8 * var(--u)) calc(16 * var(--u));
+    border-radius: 999px;
+    color: var(--t-accent);
+    font-size: calc(16 * var(--u));
+    font-weight: 500;
+  }
+
+  .sessions-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: calc(4 * var(--u)) calc(-6 * var(--u)) calc(10 * var(--u));
+    font-size: calc(15 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .sessions-head b {
+    color: var(--t-text2);
+    font-weight: 600;
+  }
+
+  .sessions-head__chev {
+    width: calc(18 * var(--u));
+    height: calc(18 * var(--u));
+    color: var(--t-accent);
+  }
+
+  .update-row {
+    display: flex;
+    gap: calc(12 * var(--u));
+    padding: calc(3 * var(--u)) 0 calc(14 * var(--u));
+  }
+
+  .update-row__cover {
+    flex: none;
+    width: calc(75 * var(--u));
+    height: calc(112 * var(--u));
+    border-radius: calc(5 * var(--u));
+  }
+
+  .update-row__cover .cover__title {
+    font-size: calc(10 * var(--u));
+  }
+
+  .update-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: calc(5 * var(--u));
+  }
+
+  .update-row__title {
+    font-size: calc(17 * var(--u));
+    font-weight: 600;
+  }
+
+  .update-row__sub {
+    font-size: calc(16 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .update-row__when {
+    margin-top: auto;
+  }
+
+  .update-row.is-viewed .update-row__title {
+    font-weight: 400;
+    opacity: 0.6;
+  }
+
+  .calendar {
+    padding: calc(14 * var(--u)) calc(14 * var(--u)) calc(10 * var(--u));
+  }
+
+  .calendar__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 calc(4 * var(--u)) calc(8 * var(--u));
+    font-size: calc(17 * var(--u));
+  }
+
+  .calendar__nav {
+    display: flex;
+    gap: calc(22 * var(--u));
+    color: var(--t-accent);
+  }
+
+  .calendar__nav span {
+    width: calc(18 * var(--u));
+    height: calc(18 * var(--u));
+  }
+
+  .calendar__nav .flip {
+    transform: scaleX(-1);
+  }
+
+  .calendar__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    row-gap: calc(2 * var(--u));
+    text-align: center;
+  }
+
+  .calendar__dow {
+    padding-bottom: calc(6 * var(--u));
+    font-size: calc(12 * var(--u));
+    font-weight: 600;
+    color: color-mix(in srgb, var(--t-text2) 70%, transparent);
+  }
+
+  .calendar__day {
+    display: grid;
+    justify-items: center;
+    gap: calc(1 * var(--u));
+    height: calc(46 * var(--u));
+  }
+
+  .calendar__num {
+    display: grid;
+    place-items: center;
+    width: calc(32 * var(--u));
+    height: calc(32 * var(--u));
+    border-radius: 99px;
+    font-size: calc(18 * var(--u));
+  }
+
+  .calendar__day.is-today .calendar__num {
+    background: var(--t-accent);
+    color: var(--t-on-accent);
+    font-weight: 600;
+  }
+
+  .calendar__badge {
+    min-width: calc(14 * var(--u));
+    padding: 0 calc(4 * var(--u));
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--t-accent) 20%, transparent);
+    color: var(--t-accent);
+    font-size: calc(9 * var(--u));
+    font-weight: 700;
+    line-height: calc(13 * var(--u));
+  }
+
+  /* Home */
+  .feed-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: calc(20 * var(--u)) calc(2 * var(--u)) calc(10 * var(--u));
+  }
+
+  .feed-head h3 {
+    font-family: inherit;
+    font-size: calc(20 * var(--u));
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--t-text);
+  }
+
+  .feed-head small {
+    display: block;
+    font-size: calc(14 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .feed-head__acc {
+    display: flex;
+    gap: calc(18 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .feed-head__acc span {
+    width: calc(16 * var(--u));
+    height: calc(16 * var(--u));
+  }
+
+  .rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(122 * var(--u));
+    gap: calc(10 * var(--u));
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(-16 * var(--u));
+    padding-inline: calc(16 * var(--u));
+  }
+
+  .rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rail--continue {
+    grid-auto-columns: calc(150 * var(--u));
+  }
+
+  .device[data-device='ipad'] .rail {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .tile {
+    display: grid;
+    gap: calc(5 * var(--u));
+    min-width: 0;
+  }
+
+  .tile__title {
+    font-size: calc(14 * var(--u));
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--t-text);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .continue {
+    border-radius: calc(10 * var(--u));
+    box-shadow: inset 0 0 0 calc(1 * var(--u)) rgba(255, 255, 255, 0.1);
+  }
+
+  .continue__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.92));
+  }
+
+  .continue__text {
+    position: absolute;
+    inset: auto calc(10 * var(--u)) calc(10 * var(--u));
+    display: grid;
+    gap: calc(6 * var(--u));
+  }
+
+  .continue .card-title {
+    color: #fff;
+  }
+
+  .continue .card-sub {
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .continue__bar {
+    display: block;
+    height: calc(4 * var(--u));
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.25);
+    overflow: hidden;
+  }
+
+  .continue__bar i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--t-accent);
+  }
+
+  .goal {
+    display: flex;
+    align-items: center;
+    gap: calc(14 * var(--u));
+    padding: calc(14 * var(--u));
+    border-radius: calc(10 * var(--u));
+    background: var(--t-surface);
+  }
+
+  .goal__ring {
+    position: relative;
+    flex: none;
+    width: calc(48 * var(--u));
+    height: calc(48 * var(--u));
+  }
+
+  .goal__ring .ring {
+    width: 100%;
+    height: 100%;
+  }
+
+  .goal__ring circle {
+    stroke-width: 6;
+  }
+
+  .goal__ring .ring__track {
+    stroke: color-mix(in srgb, var(--t-text) 12%, transparent);
+  }
+
+  .goal__target {
+    position: absolute;
+    inset: calc(15 * var(--u));
+    color: var(--t-text2);
+  }
+
+  .goal__text {
+    flex: 1;
+    display: grid;
+    gap: calc(3 * var(--u));
+  }
+
+  .goal__streak {
+    display: flex;
+    align-items: center;
+    gap: calc(3 * var(--u));
+  }
+
+  .goal__streak span {
+    width: calc(12 * var(--u));
+    height: calc(12 * var(--u));
+  }
+
+  .goal__chev {
+    flex: none;
+    width: calc(13 * var(--u));
+    height: calc(13 * var(--u));
+    color: color-mix(in srgb, var(--t-text2) 55%, transparent);
+  }
+
+  /* Settings */
+  .switch {
+    flex: none;
+    position: relative;
+    width: calc(62 * var(--u));
+    height: calc(28 * var(--u));
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--t-text) 16%, transparent);
+  }
+
+  .switch i {
+    position: absolute;
+    top: calc(2 * var(--u));
+    left: calc(2 * var(--u));
+    width: calc(38 * var(--u));
+    height: calc(24 * var(--u));
+    border-radius: 99px;
+    background: #fff;
+    box-shadow: 0 calc(2 * var(--u)) calc(5 * var(--u)) rgba(0, 0, 0, 0.2);
+  }
+
+  .switch.is-on {
+    background: var(--t-accent);
+  }
+
+  .switch.is-on i {
+    left: auto;
+    right: calc(2 * var(--u));
+  }
+
+  /* Search */
+  .field {
+    display: flex;
+    align-items: center;
+    gap: calc(8 * var(--u));
+    height: calc(40 * var(--u));
+    padding-inline: calc(12 * var(--u));
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--t-text) 10%, transparent);
+    color: var(--t-text2);
+  }
+
+  .field > span:first-child {
+    width: calc(18 * var(--u));
+    height: calc(18 * var(--u));
+  }
+
+  .field__query,
+  .searchbar__query {
+    color: var(--t-text);
+  }
+
+  .device[data-device='iphone'] .field--top {
+    display: none;
+  }
+
+  .device[data-device='ipad'] .field--top {
+    max-width: calc(520 * var(--u));
+  }
+
+  /* -------------------------------------------------------------- tab bar */
+
+  .tabbar {
+    position: absolute;
+    z-index: 4;
+    left: calc(20 * var(--u));
+    right: calc(20 * var(--u));
+    bottom: calc(26 * var(--u));
+    display: flex;
+    align-items: center;
+    gap: calc(10 * var(--u));
+  }
+
+  .tabbar__tabs {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: calc(4 * var(--u));
+    border-radius: 999px;
+  }
+
+  .tabbar__search {
+    flex: none;
+    width: calc(62 * var(--u));
+    height: calc(62 * var(--u));
+    padding: calc(19 * var(--u));
+    cursor: pointer;
+  }
+
+  .tabbar__sidebar,
+  .tab.tab--search-inline {
+    display: none;
+  }
+
+  .tab {
+    flex: 1;
+    display: grid;
+    justify-items: center;
+    gap: calc(2 * var(--u));
+    padding: calc(7 * var(--u)) 0 calc(6 * var(--u));
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--t-text);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .tab__icon {
+    width: calc(25 * var(--u));
+    height: calc(25 * var(--u));
+  }
+
+  .tab__label {
+    font-size: calc(10 * var(--u));
+    font-weight: 600;
+  }
+
+  .tab.is-selected,
+  .tabbar__search.is-selected {
+    color: var(--t-accent);
+  }
+
+  .tab.is-selected {
+    background: var(--glass-select);
+  }
+
+  /* iPhone search */
+  .searchbar {
+    position: absolute;
+    z-index: 4;
+    left: calc(20 * var(--u));
+    right: calc(20 * var(--u));
+    bottom: calc(26 * var(--u));
+    display: none;
+    align-items: center;
+    gap: calc(10 * var(--u));
+  }
+
+  .searchbar .glass--circle {
+    width: calc(54 * var(--u));
+    height: calc(54 * var(--u));
+    padding: calc(15 * var(--u));
+    cursor: pointer;
+  }
+
+  .searchbar__field {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: calc(8 * var(--u));
+    height: calc(54 * var(--u));
+    padding-inline: calc(18 * var(--u));
+    border-radius: 999px;
+    color: var(--t-text2);
+  }
+
+  .searchbar__field > span:not(.searchbar__query) {
+    flex: none;
+    width: calc(20 * var(--u));
+    height: calc(20 * var(--u));
+  }
+
+  .searchbar__query {
+    flex: 1;
+  }
+
+  .device[data-device='iphone'][data-tab='search'] .tabbar {
+    display: none;
+  }
+
+  .device[data-device='iphone'][data-tab='search'] .searchbar {
+    display: flex;
+  }
+
+  /* iPad: the tab bar floats at the top centre, with search inside it. */
+  .device[data-device='ipad'] .tabbar {
+    top: calc(30 * var(--u));
+    bottom: auto;
+    left: calc(22 * var(--u));
+    right: calc(22 * var(--u));
+    justify-content: center;
+  }
+
+  .device[data-device='ipad'] .tabbar__sidebar {
+    display: grid;
+    position: absolute;
+    left: 0;
+  }
+
+  .device[data-device='ipad'] .tabbar__search {
+    display: none;
+  }
+
+  .device[data-device='ipad'] .tabbar__tabs {
+    flex: none;
+    gap: calc(2 * var(--u));
+  }
+
+  .device[data-device='ipad'] .tab {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: calc(6 * var(--u));
+    padding: calc(8 * var(--u)) calc(16 * var(--u));
+  }
+
+  .device[data-device='ipad'] .tab__icon {
+    width: calc(19 * var(--u));
+    height: calc(19 * var(--u));
+  }
+
+  .device[data-device='ipad'] .tab__label {
+    font-size: calc(15 * var(--u));
+  }
+
+  .device[data-device='ipad'] .tab.tab--search-inline {
+    display: flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preset__swatch,
+    .tab,
+    .presets__chev {
+      transition: none;
+    }
+  }
+</style>
