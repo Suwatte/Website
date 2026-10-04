@@ -1,8 +1,8 @@
 export const SITE = {
   name: 'Suwatte',
-  tagline: 'Read your way.',
+  tagline: 'Manga, Comics and Novels',
   description:
-    'Suwatte is an ad-free reader for manga, manhwa, manhua, comics and novels on iPhone and iPad. Add your own sources, connect your own servers, and let iCloud keep your devices the same.',
+    'Read manga, comics and novels on iPhone and iPad, ad-free. Add sources, connect servers, or open your own files.',
   url: 'https://suwatte.app',
   github: 'https://github.com/Suwatte',
   patreon: 'https://www.patreon.com/mantton',
